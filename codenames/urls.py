@@ -6,7 +6,7 @@ admin.autodiscover()
 import codenames.views
 
 # Examples:
-# url(r'^$', 'gettingstarted.views.home', name='home'),
+# url(r'^$', 'codenames.views.home', name='home'),
 # url(r'^blog/', include('blog.urls')),
 
 urlpatterns = [
