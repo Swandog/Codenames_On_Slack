@@ -1,4 +1,4 @@
-import os, random, json
+import os, random, json, requests
 from django.shortcuts import render
 from django.http import HttpResponse
 
@@ -18,6 +18,52 @@ def db(request):
     greetings = Greeting.objects.all()
 
     return render(request, 'db.html', {'greetings': greetings})
+
+def test_webhook(request):
+    webhook_url = 'https://hooks.slack.com/services/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'
+    payload={
+            "text": "Would you like to play a game?",
+            "attachments": [
+                {
+                    "text": "Choose a game to play",
+                    "fallback": "You are unable to choose a game",
+                    "callback_id": "wopr_game",
+                    "color": "#3AA3E3",
+                    "attachment_type": "default",
+                    "actions": [
+                        {
+                            "name": "chess",
+                            "text": "Chess",
+                            "type": "button",
+                            "value": "chess"
+                        },
+                        {
+                            "name": "maze",
+                            "text": "Falken's Maze",
+                            "type": "button",
+                            "value": "maze"
+                        },
+                        {
+                            "name": "war",
+                            "text": "Thermonuclear War",
+                            "style": "danger",
+                            "type": "button",
+                            "value": "war",
+                            "confirm": {
+                                "title": "Are you sure?",
+                                "text": "Wouldn't you prefer a good game of chess?",
+                                "ok_text": "Yes",
+                                "dismiss_text": "No"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    headers = {'content-type': 'application/json'}
+
+    requests.post(webhook_url, data=json.dumps(payload), headers=headers)
+    return HttpResponse(json.dumps(payload), content_type='application/json')
 
 def generate_wordset(request):
     # read the words_list file and build an array of words
