@@ -112,11 +112,11 @@ def generate_mapcard(starting_team):
 
 def button(request):
     # parse the request to a dict
-    req_dict = urlparse.parse_qs(urllib.unquote(request.body))['payload'][0]
-    actions = req_dict["actions"]
-    callback_id = req_dict["callback_id"]
-    channel = req_dict["channel"]
-    user = req_dict["user"]
+    req_dict = json.loads(urlparse.parse_qs(urllib.unquote(request.body))['payload'][0])
+    actions = req_dict["actions"] #ex: [{u'name': u'chess', u'value': u'chess'}]
+    callback_id = req_dict["callback_id"] #ex: wopr_game
+    channel = req_dict["channel"] #ex: {u'id': u'C3NUEG0S0', u'name': u'game'}
+    user = req_dict["user"] #ex: {u'id': u'U3N3Z66TB', u'name': u'dustin'}
 
     print(actions, callback_id, channel, user)
 
