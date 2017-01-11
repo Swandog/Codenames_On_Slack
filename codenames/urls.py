@@ -14,5 +14,6 @@ urlpatterns = [
     url(r'^db', app.views.db, name='db'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^generate_wordset$', app.views.generate_wordset),
-    url(r'^test_webhook$', app.views.test_webhook)
+    url(r'^test_webhook$', app.views.test_webhook),
+    url(r'^slack/', include('django_slack_oauth.urls')),
 ]

@@ -37,8 +37,13 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'app'
+    'app',
+    'django_slack_oauth',
 )
+
+SLACK_CLIENT_ID = os.environ.get('SLACK_CLIENT_ID')
+SLACK_CLIENT_SECRET = os.environ.get('SLACK_CLIENT_SECRET')
+SLACK_SCOPE = 'admin,bot'
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
