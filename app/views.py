@@ -60,10 +60,10 @@ def test_webhook(request):
                 }
             ]
         }
-    headers = {'content-type': 'application/json', 'token': 'xoxp-125493265142-124135210929-126650312950-833a204c78331c4b6f6add0f13a7a6ad'}
 
-    requests.post(webhook_url, data=json.dumps(payload), headers=headers)
-    return HttpResponse(json.dumps(payload), content_type='application/json')
+    # headers = {'content-type': 'application/json', 'token': 'xoxp-125493265142-124135210929-126650312950-833a204c78331c4b6f6add0f13a7a6ad'}
+    # requests.post(webhook_url, data=json.dumps(payload), headers=headers)
+    return HttpResponse(json.dumps(payload), content_type='application/json', token='xoxp-125493265142-124135210929-126650312950-833a204c78331c4b6f6add0f13a7a6ad')
 
 def generate_wordset(request):
     # read the words_list file and build an array of words
