@@ -9,10 +9,6 @@ def index(request):
     # return HttpResponse('codenames from Python!')
     return render(request, 'index.html')
 
-def button(request):
-    return HttpResponse(json.dumps({'text': "hello world"}), content_type='application/json')
-
-
 def db(request):
     greeting = Greeting()
     greeting.save()
@@ -114,3 +110,7 @@ def generate_mapcard(starting_team):
     ret[indices[17]] = "X"
 
     return ret
+
+def button(request):
+    print(request)
+    return HttpResponse(json.dumps({'text': "hello world"}), content_type='application/json')
