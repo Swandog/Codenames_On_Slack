@@ -43,7 +43,7 @@ INSTALLED_APPS = (
 
 SLACK_CLIENT_ID = '125493265142.124183670353'
 SLACK_CLIENT_SECRET = '53b2a481b4cf9767a063dd48ec15ec69'
-SLACK_SCOPE = 'admin,bot'
+SLACK_SCOPE = 'admin,bot,incoming-webhook,commands'
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -55,6 +55,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
 )
+
+SLACK_SUCCESS_REDIRECT_URL = '/'
 
 ROOT_URLCONF = 'codenames.urls'
 
