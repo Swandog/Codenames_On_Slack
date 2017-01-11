@@ -59,7 +59,6 @@ def test_webhook(request):
             ]
         }
 
-    # headers = {'content-type': 'application/json', 'token': 'xoxp-125493265142-124135210929-126650312950-833a204c78331c4b6f6add0f13a7a6ad'}
     # requests.post(webhook_url, data=json.dumps(payload), headers=headers)
     return HttpResponse(json.dumps(payload), content_type='application/json')
 
@@ -113,13 +112,12 @@ def generate_mapcard(starting_team):
 
 def button(request):
     # parse the request to a dict
-    req_dict = urlparse.parse_qs(urllib.unquote(request.body))['payload']
+    req_dict = urlparse.parse_qs(urllib.unquote(request.body))['payload'][0]
     actions = req_dict["actions"]
     callback_id = req_dict["callback_id"]
     channel = req_dict["channel"]
     user = req_dict["user"]
 
     print(actions, callback_id, channel, user)
-
 
     return HttpResponse(json.dumps({'text': "hello world"}), content_type='application/json')
