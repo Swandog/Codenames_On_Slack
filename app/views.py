@@ -113,7 +113,13 @@ def generate_mapcard(starting_team):
 
 def button(request):
     # parse the request to a dict
-    request_as_dict = urlparse.parse_qs(urllib.unquote(request.body))
-    print(request_as_dict)
-    
+    req_dict = urlparse.parse_qs(urllib.unquote(request.body))['payload']
+    actions = req_dict["actions"]
+    callback_id = req_dict["callback_id"]
+    channel = req_dict["channel"]
+    user = req_dict["user"]
+
+    print(actions, callback_id, channel, user)
+
+
     return HttpResponse(json.dumps({'text': "hello world"}), content_type='application/json')
