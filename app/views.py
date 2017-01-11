@@ -112,5 +112,5 @@ def generate_mapcard(starting_team):
     return ret
 
 def button(request):
-    print json.loads(request.body)
+    print request.json_body
     return HttpResponse(json.dumps({'text': "hello world"}), content_type='application/json')
