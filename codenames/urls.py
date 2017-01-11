@@ -16,4 +16,5 @@ urlpatterns = [
     url(r'^generate_wordset$', app.views.generate_wordset),
     url(r'^test_webhook$', app.views.test_webhook),
     url(r'^slack/', include('django_slack_oauth.urls')),
+    url(r'^button/', app.views.button),
 ]

@@ -9,9 +9,11 @@ def index(request):
     # return HttpResponse('codenames from Python!')
     return render(request, 'index.html')
 
+def button(request):
+    return HttpResponse(json.dumps({'text': "hello world"}), content_type='application/json')
+
 
 def db(request):
-
     greeting = Greeting()
     greeting.save()
 
