@@ -1,4 +1,4 @@
-import os, random, json, requests
+import os, random, json, requests, urllib, urlparse
 from django.shortcuts import render
 from django.http import HttpResponse
 
@@ -112,9 +112,8 @@ def generate_mapcard(starting_team):
     return ret
 
 def button(request):
-    body_unicode = request.body.decode('utf-8')
-    print(body_unicode)
-    body_data = json.loads(body_unicode)
-    print(body_data)
-
+    # parse the request to a dict
+    request_as_dict = urlparse.parse_qs(urllib.unquote(request.body))
+    print(request_as_dict)
+    
     return HttpResponse(json.dumps({'text': "hello world"}), content_type='application/json')
