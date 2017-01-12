@@ -20,39 +20,34 @@ def db(request):
 def test_webhook(request):
     webhook_url = 'https://hooks.slack.com/services/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'
     payload={
-            "text": "Would you like to play a game?",
+            "text": "Someone wants to play a game of Codenames",
             "attachments": [
                 {
-                    "text": "Choose a game to play",
+                    "text": "Choose a team",
                     "fallback": "You are unable to choose a game",
-                    "callback_id": "wopr_game",
+                    "callback_id": "team_chosen",
                     "color": "#3AA3E3",
                     "attachment_type": "default",
                     "actions": [
                         {
-                            "name": "chess",
-                            "text": "Chess",
+                            "name": "blue",
+                            "text": "Blue Team",
+                            "style": "primary",
                             "type": "button",
-                            "value": "chess"
+                            "value": "blue",
                         },
                         {
-                            "name": "maze",
-                            "text": "Falken's Maze",
-                            "type": "button",
-                            "value": "maze"
-                        },
-                        {
-                            "name": "war",
-                            "text": "Thermonuclear War",
+                            "name": "red",
+                            "text": "Red Team",
                             "style": "danger",
                             "type": "button",
-                            "value": "war",
-                            "confirm": {
-                                "title": "Are you sure?",
-                                "text": "Wouldn't you prefer a good game of chess?",
-                                "ok_text": "Yes",
-                                "dismiss_text": "No"
-                            }
+                            "value": "red",
+                            # "confirm": {
+                            #     "title": "Are you sure?",
+                            #     "text": "Wouldn't you prefer a good game of chess?",
+                            #     "ok_text": "Yes",
+                            #     "dismiss_text": "No"
+                            # }
                         }
                     ]
                 }
