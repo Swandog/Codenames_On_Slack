@@ -19,7 +19,11 @@ def db(request):
 
 def test_webhook(request):
     webhook_url = 'https://hooks.slack.com/services/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'
-    print("request.body.as_dict(): {}".format(urlparse.parse_qs(urllib.unquote(request.body))))
+    req_dict = urlparse.parse_qs(urllib.unquote(request.body))
+    user_id = req_dict['user_id'][0]
+    user_name = req_dict['user_name'][0]
+    channel_id = req_dict['channel_id'][0]
+    print("user_id: {}, user_name: {}, channel_id: {}".format(user_id, user_name, channel_id))
     # req_dict = parse_qs(urllib.unquote(request.body))
     # print(req_dict)
     payload={
