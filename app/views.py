@@ -32,7 +32,6 @@ def test_webhook(request):
                         {
                             "name": "blue",
                             "text": "Blue Team",
-                            "style": "primary",
                             "type": "button",
                             "value": "blue",
                         },
@@ -42,19 +41,13 @@ def test_webhook(request):
                             "style": "danger",
                             "type": "button",
                             "value": "red",
-                            # "confirm": {
-                            #     "title": "Are you sure?",
-                            #     "text": "Wouldn't you prefer a good game of chess?",
-                            #     "ok_text": "Yes",
-                            #     "dismiss_text": "No"
-                            # }
                         }
                     ]
                 }
             ]
         }
 
-    # requests.post(webhook_url, data=json.dumps(payload), headers=headers)
+    requests.post(webhook_url, data=json.dumps(payload), headers=headers)
     return HttpResponse(json.dumps(payload), content_type='application/json')
 
 def generate_wordset(request):
