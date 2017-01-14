@@ -21,6 +21,7 @@ def test_webhook(request):
     webhook_url = 'https://hooks.slack.com/services/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'
     payload={
             "text": "Someone wants to play a game of Codenames",
+            "response_type": "in_channel",
             "attachments": [
                 {
                     "text": "Choose a team",
