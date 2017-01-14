@@ -47,7 +47,6 @@ def test_webhook(request):
             ]
         }
 
-    requests.post(webhook_url, data=json.dumps(payload), headers=headers)
     return HttpResponse(json.dumps(payload), content_type='application/json')
 
 def generate_wordset(request):
