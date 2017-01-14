@@ -19,7 +19,7 @@ def db(request):
 
 def test_webhook(request):
     webhook_url = 'https://hooks.slack.com/services/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'
-    print("request.body.as_dict(): {}".format(parse_qs(urllib.unquote(request.body))))
+    print("request.body.as_dict(): {}".format(urlparse.parse_qs(urllib.unquote(request.body))))
     # req_dict = parse_qs(urllib.unquote(request.body))
     # print(req_dict)
     payload={
