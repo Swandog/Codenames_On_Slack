@@ -72,7 +72,15 @@ def initialize_game(request):
     return HttpResponse(json.dumps(payload), content_type='application/json')
 
 def close_teams(request):
-    pass
+    req_dict = urlparse.parse_qs(urllib.unquote(request.body))
+    print(req_dict)
+    # delete the initial game dialog with the buttons to choose a team
+    delete_message = {
+        'token': 'hIVNeVtx1YEsWLgP2bs98FPP',
+        'ts': 123456789,
+        'channel': 'C3NUEG0S0'
+    }
+    requests.post("https://slack.com/api/chat.delete", data=json.dumps(delete_message), headers={'Content-Type': 'application/json'})
 
 def generate_wordset():
     # read the words_list file and build an array of words
