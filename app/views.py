@@ -46,7 +46,6 @@ def initialize_game(request):
                 "attachments": [
                     {
                         "text": "Choose a team",
-                        "ts": 123456789,
                         "fallback": "You are unable to choose a game",
                         "callback_id": "team_chosen",
                         "color": "#3AA3E3",
@@ -143,7 +142,6 @@ def button(request):
             Player.objects.create(
                 slack_id=user['id'],
                 team_color=button_value,
-                is_spy_master=False,
                 game_id=active_game_in_channel_id
             )
             payload = {'text': "added <@{}> to the {} team".format(user['name'], button_value), "replace_original": False, "response_type": "in_channel"}
