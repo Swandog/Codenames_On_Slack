@@ -29,7 +29,7 @@ def initialize_game(request):
     if Game.objects.filter(channel_id=channel_id).count() > 0:
         payload = {
           "response_type": "ephemeral",
-          "replace_original": false,
+          "replace_original": False,
           "text": "There's already a game in progress!"
         }
     else:
@@ -41,7 +41,7 @@ def initialize_game(request):
             channel_id = channel_id
         )
         payload={
-                "text": "<@channel>, <@{}> wants to play a game of Codenames".format(user_name),
+                "text": "<@channel_id>, <@{}> wants to play a game of Codenames".format(user_name),
                 "response_type": "in_channel",
                 "attachments": [
                     {
@@ -122,6 +122,8 @@ def button(request):
     channel = req_dict["channel"] #ex: {u'id': u'C3NUEG0S0', u'name': u'game'}
     user = req_dict["user"] #ex: {u'id': u'U3N3Z66TB', u'name': u'dustin'}
 
-    print(actions, callback_id, channel, user)
+    print(req_dict)
+
+    payload = {'text': "added <@{}> to the {} team".format(user['name'], "uh")}
 
     return HttpResponse(json.dumps({'text': "hello world"}), content_type='application/json')
