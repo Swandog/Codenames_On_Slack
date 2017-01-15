@@ -41,7 +41,7 @@ def initialize_game(request):
             channel_id = channel_id
         )
         payload={
-                "text": "<@channel_id>, <@{}> wants to play a game of Codenames".format(user_name),
+                "text": "<@{}>, <@{}> wants to play a game of Codenames".format(channel_id, user_name),
                 "response_type": "in_channel",
                 "attachments": [
                     {
