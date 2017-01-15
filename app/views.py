@@ -76,7 +76,7 @@ def close_teams(request):
     print(req_dict)
     # delete the initial game dialog with the buttons to choose a team
     delete_message = {
-        'token': 'hIVNeVtx1YEsWLgP2bs98FPP',
+        'token': 'xoxp-125493265142-124135210929-127891913876-ac9e3f682a6dd3257a920c57286a5abe',
         'ts': 123456789,
         'channel': 'C3NUEG0S0'
     }
