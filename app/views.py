@@ -41,7 +41,7 @@ def initialize_game(request):
             channel_id = channel_id
         )
         payload={
-                "text": "<@{}>, <@{}> wants to play a game of Codenames".format(channel_id, user_name),
+                "text": "@channel, <@{}> wants to play a game of Codenames".format(channel_id, user_name),
                 "response_type": "in_channel",
                 "attachments": [
                     {
@@ -121,12 +121,22 @@ def button(request):
     callback_id = req_dict["callback_id"] #ex: wopr_game
     channel = req_dict["channel"] #ex: {u'id': u'C3NUEG0S0', u'name': u'game'}
     user = req_dict["user"] #ex: {u'id': u'U3N3Z66TB', u'name': u'dustin'}
+    button_value = req_dict['actions'][0]['value']
 
-    print(req_dict)
-
-    payload = {
-        'text': "added <@{}> to the {} team".format(user['name'], "uh"),
-        "replace_original": False
-        }
+    # detect if the user is picking a team
+    if button_value == "blue" or button_value == "red":
+        # prevent a player from adding themselves to the game multiple times
+        active_game_in_channel_id = Game.objects.get(id=channel['id'])
+        if Player.objects.filter(slack_id=user['id'], game_id=active_game_in_channel_id).count > 0:
+            payload = {'text': "You've already been added to this game"}
+        else:
+            # create a to-be-deleted player object that fk's a player to the game instance
+            Player.objects.create(
+                slack_id=user['id'],
+                team_color=button_value,
+                is_spy_master=False,
+                game_id=active_game_in_channel_id
+            )
+            payload = {'text': "added <@{}> to the {} team".format(user['name'], button_value), "replace_original": False}
 
     return HttpResponse(json.dumps(payload), content_type='application/json')
