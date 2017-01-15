@@ -71,6 +71,9 @@ def initialize_game(request):
             }
     return HttpResponse(json.dumps(payload), content_type='application/json')
 
+def close_teams(request):
+    pass
+
 def generate_wordset():
     # read the words_list file and build an array of words
     words = []
