@@ -82,6 +82,8 @@ def close_teams(request):
     }
     requests.post("https://slack.com/api/chat.delete", data=json.dumps(delete_message), headers={'Content-Type': 'application/json'})
 
+    return HttpResponse(json.dumps(delete_message), content_type='application/json')
+
 def generate_wordset():
     # read the words_list file and build an array of words
     words = []
