@@ -68,7 +68,6 @@ def initialize_game(request):
                     }
                 ]
             }
-    }
     return HttpResponse(json.dumps(payload), content_type='application/json')
 
 def generate_wordset():
