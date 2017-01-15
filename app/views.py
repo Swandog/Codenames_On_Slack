@@ -19,7 +19,6 @@ def db(request):
 
 def initialize_game(request):
     # create a game instance in the db then let the users pick teams
-    webhook_url = 'https://hooks.slack.com/services/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'
     req_dict = urlparse.parse_qs(urllib.unquote(request.body))
     user_id = req_dict['user_id'][0]
     user_name = req_dict['user_name'][0]
@@ -38,7 +37,8 @@ def initialize_game(request):
         Game.objects.create(
             map_card = json.dumps(game_board_data["map_card"]),
             word_set = json.dumps(game_board_data["words_list"]),
-            channel_id = channel_id
+            channel_id = channel_id,
+            game_master = user_id
         )
         payload={
                 "text": "<@{}> wants to play a game of Codenames".format(user_id, user_name),
@@ -46,6 +46,7 @@ def initialize_game(request):
                 "attachments": [
                     {
                         "text": "Choose a team",
+                        "ts": 123456789,
                         "fallback": "You are unable to choose a game",
                         "callback_id": "team_chosen",
                         "color": "#3AA3E3",
@@ -128,7 +129,7 @@ def button(request):
         # prevent a player from adding themselves to the game multiple times
         active_game_in_channel_id = Game.objects.get(channel_id=channel['id'])
         if Player.objects.filter(slack_id=user['id'], game_id=active_game_in_channel_id).count() > 0:
-            payload = {'text': "You've already been added to this game", "replace_original": False}
+            payload = {'text': "You've already been added to this game.", "replace_original": False}
         else:
             # create a to-be-deleted player object that fk's a player to the game instance
             Player.objects.create(
@@ -137,6 +138,6 @@ def button(request):
                 is_spy_master=False,
                 game_id=active_game_in_channel_id
             )
-            payload = {'text': "added <@{}> to the {} team".format(user['name'], button_value), "replace_original": False}
+            payload = {'text': "added <@{}> to the {} team".format(user['name'], button_value), "replace_original": False, "response_type": "in_channel"}
 
     return HttpResponse(json.dumps(payload), content_type='application/json')
