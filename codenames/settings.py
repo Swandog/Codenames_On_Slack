@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'app',
     'django_slack_oauth',
+    'django_extensions',
 )
 
 SLACK_CLIENT_ID = '125493265142.124183670353'

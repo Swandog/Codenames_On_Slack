@@ -17,47 +17,61 @@ def db(request):
 
     return render(request, 'db.html', {'greetings': greetings})
 
-def test_webhook(request):
+def initialize_game(request):
+    # create a game instance in the db then let the users pick teams
     webhook_url = 'https://hooks.slack.com/services/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'
     req_dict = urlparse.parse_qs(urllib.unquote(request.body))
     user_id = req_dict['user_id'][0]
     user_name = req_dict['user_name'][0]
     channel_id = req_dict['channel_id'][0]
-    print("user_id: {}, user_name: {}, channel_id: {}".format(user_id, user_name, channel_id))
-    # req_dict = parse_qs(urllib.unquote(request.body))
-    # print(req_dict)
-    payload={
-            "text": "Someone wants to play a game of Codenames",
-            "response_type": "in_channel",
-            "attachments": [
-                {
-                    "text": "Choose a team",
-                    "fallback": "You are unable to choose a game",
-                    "callback_id": "team_chosen",
-                    "color": "#3AA3E3",
-                    "attachment_type": "default",
-                    "actions": [
-                        {
-                            "name": "blue",
-                            "text": "Blue Team",
-                            "type": "button",
-                            "value": "blue",
-                        },
-                        {
-                            "name": "red",
-                            "text": "Red Team",
-                            "style": "danger",
-                            "type": "button",
-                            "value": "red",
-                        }
-                    ]
-                }
-            ]
-        }
 
+    # if there's already an active game in the channel, respond with error
+    if Game.objects.filter(channel_id=channel_id).count() > 0:
+        payload = {
+          "response_type": "ephemeral",
+          "replace_original": false,
+          "text": "There's already a game in progress!"
+        }
+    else:
+        # create a new game in channel with the generated data
+        game_board_data = generate_wordset()
+        Game.objects.create(
+            map_card = json.dumps(game_board_data["map_card"]),
+            word_set = json.dumps(game_board_data["words_list"]),
+            channel_id = channel_id
+        )
+        payload={
+                "text": "<@channel>, <@{}> wants to play a game of Codenames".format(user_name),
+                "response_type": "in_channel",
+                "attachments": [
+                    {
+                        "text": "Choose a team",
+                        "fallback": "You are unable to choose a game",
+                        "callback_id": "team_chosen",
+                        "color": "#3AA3E3",
+                        "attachment_type": "default",
+                        "actions": [
+                            {
+                                "name": "blue",
+                                "text": "Blue Team",
+                                "type": "button",
+                                "value": "blue",
+                            },
+                            {
+                                "name": "red",
+                                "text": "Red Team",
+                                "style": "danger",
+                                "type": "button",
+                                "value": "red",
+                            }
+                        ]
+                    }
+                ]
+            }
+    }
     return HttpResponse(json.dumps(payload), content_type='application/json')
 
-def generate_wordset(request):
+def generate_wordset():
     # read the words_list file and build an array of words
     words = []
     words_file = open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'words_list.txt'))
@@ -70,14 +84,10 @@ def generate_wordset(request):
     starting_team = ["red", "blue"][random.randint(0,1)]
     map_card = generate_mapcard(starting_team)
 
-    data = json.dumps({"words_list": words_list, "map_card": map_card})
-    Game.objects.create(
-        map_card=json.dumps(map_card),
-        word_set=json.dumps(words_list),
-        channel_id="0"
-    )
+    data = {"words_list": words_list, "map_card": map_card}
 
-    return HttpResponse(data, content_type='application/json')
+    return data
+
 
 def generate_mapcard(starting_team):
     num_red_agents = 8
