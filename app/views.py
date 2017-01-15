@@ -128,7 +128,7 @@ def button(request):
         # prevent a player from adding themselves to the game multiple times
         active_game_in_channel_id = Game.objects.get(channel_id=channel['id'])
         if Player.objects.filter(slack_id=user['id'], game_id=active_game_in_channel_id).count() > 0:
-            payload = {'text': "You've already been added to this game"}
+            payload = {'text': "You've already been added to this game", "replace_original": False}
         else:
             # create a to-be-deleted player object that fk's a player to the game instance
             Player.objects.create(
