@@ -9,6 +9,7 @@ class Game(models.Model):
     word_set = models.CharField(max_length=1000, blank=True, default="")
     channel_id = models.CharField(max_length=30, default=None)
     game_master = models.CharField(max_length=30, default=None)
+    accepting_new_players = models.BooleanField(default=True)
 
 class Player(models.Model):
     slack_id = models.CharField(max_length=30, default=None)
