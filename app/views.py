@@ -124,6 +124,9 @@ def button(request):
 
     print(req_dict)
 
-    payload = {'text': "added <@{}> to the {} team".format(user['name'], "uh")}
+    payload = {
+        'text': "added <@{}> to the {} team".format(user['name'], "uh"),
+        "replace_original": False
+        }
 
-    return HttpResponse(json.dumps({'text': "hello world"}), content_type='application/json')
+    return HttpResponse(json.dumps(payload), content_type='application/json')
