@@ -135,6 +135,7 @@ def button(request):
     if button_value == "blue" or button_value == "red":
         # prevent a player from adding themselves to the game multiple times
         active_game_in_channel_id = Game.objects.get(channel_id=channel['id'])
+        if
         if Player.objects.filter(slack_id=user['id'], game_id=active_game_in_channel_id).count() > 0:
             payload = {'text': "You've already been added to this game.", "replace_original": False}
         else:
@@ -142,7 +143,7 @@ def button(request):
             Player.objects.create(
                 slack_id=user['id'],
                 team_color=button_value,
-                game_id=active_game_in_channel_id
+                game=active_game_in_channel_id
             )
             payload = {'text': "added <@{}> to the {} team".format(user['name'], button_value), "replace_original": False, "response_type": "in_channel"}
 
