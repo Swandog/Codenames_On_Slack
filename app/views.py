@@ -6,8 +6,13 @@ from .models import Greeting, Game, Player
 
 # Create your views here.
 def index(request):
-    # return HttpResponse('codenames from Python!')
     return render(request, 'index.html')
+
+def test_webhook(request):
+    req_dict = urlparse.parse_qs(urllib.unquote(request.body))
+    print(req_dict)
+    return HttpResponse({}, content_type='application/json')
+
 
 def db(request):
     greeting = Greeting()
@@ -26,11 +31,7 @@ def initialize_game(request):
 
     # if there's already an active game in the channel, respond with error
     if Game.objects.filter(channel_id=channel_id).count() > 0:
-        payload = {
-          "response_type": "ephemeral",
-          "replace_original": False,
-          "text": "There's already a game in progress!"
-        }
+        payload = {"response_type": "ephemeral", "replace_original": False, "text": "There's already a game in progress!"}
     else:
         # create a new game in channel with the generated data
         game_board_data = generate_wordset()
@@ -72,11 +73,51 @@ def initialize_game(request):
 
 def close_teams(request):
     req_dict = urlparse.parse_qs(urllib.unquote(request.body))
+    user_name = req_dict['user_name'][0]
+    user_id = req_dict['user_id'][0]
+    channel_id = req_dict['channel_id'][0]
     print(req_dict)
+
     # disable team selection, and let users pick their team captains
+    if Game.objects.filter(channel_id=channel_id).count == 0:
+        payload = {"text": "There's no active game in the channel, try `/codenames`."}
+    else:
+        active_game_in_channel = Game.objects.get(channel_id=channel_id)
+        if user_id != active_game_in_channel.game_master:
+            payload = {"text": "Only the game master (<@{}>) can close the teams.".format(active_game_in_channel.game_master)}
+        else:
+            # show buttons to pick team leaders
+            buttons = []
+            payload={
+                    "text": "<@{}> wants to play a game of Codenames".format(user_id, user_name),
+                    "response_type": "in_channel",
+                    "attachments": [
+                        {
+                            "text": "Choose a team",
+                            "fallback": "You are unable to choose a game",
+                            "callback_id": "team_chosen",
+                            "color": "#3AA3E3",
+                            "attachment_type": "default",
+                            "actions": [
+                                {
+                                    "name": "blue",
+                                    "text": "Blue Team",
+                                    "type": "button",
+                                    "value": "blue",
+                                },
+                                {
+                                    "name": "red",
+                                    "text": "Red Team",
+                                    "style": "danger",
+                                    "type": "button",
+                                    "value": "red",
+                                }
+                            ]
+                        }
+                    ]
+                }
 
-
-    return HttpResponse({}, content_type='application/json')
+    return HttpResponse({json.dumps(payload)}, content_type='application/json')
 
 def generate_wordset():
     # read the words_list file and build an array of words
@@ -135,15 +176,18 @@ def button(request):
     if button_value == "blue" or button_value == "red":
         # prevent a player from adding themselves to the game multiple times
         active_game_in_channel = Game.objects.get(channel_id=channel['id'])
-        if Player.objects.filter(slack_id=user['id'], game=active_game_in_channel).count() > 0:
-            payload = {'text': "You've already been added to this game.", "replace_original": False}
+        if active_game_in_channel.accepting_new_players == False:
+            payload = {'text': "Teams for this channel's active game have been locked.", "replace_original": False}
         else:
-            # create a to-be-deleted player object that fk's a player to the game instance
-            Player.objects.create(
-                slack_id=user['id'],
-                team_color=button_value,
-                game=active_game_in_channel
-            )
-            payload = {'text': "added <@{}> to the {} team".format(user['name'], button_value), "replace_original": False, "response_type": "in_channel"}
+            if Player.objects.filter(slack_id=user['id'], game=active_game_in_channel).count() > 0:
+                payload = {'text': "You've already been added to this game.", "replace_original": False}
+            else:
+                # create a to-be-deleted player object that fk's a player to the game instance
+                Player.objects.create(
+                    slack_id=user['id'],
+                    team_color=button_value,
+                    game=active_game_in_channel
+                )
+                payload = {'text': "added <@{}> to the {} team".format(user['name'], button_value), "replace_original": False, "response_type": "in_channel"}
 
     return HttpResponse(json.dumps(payload), content_type='application/json')

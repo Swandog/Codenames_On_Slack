@@ -18,4 +18,5 @@ urlpatterns = [
     url(r'^slack/', include('django_slack_oauth.urls')),
     url(r'^button/', app.views.button),
     url(r'^close_teams', app.views.close_teams),
+    url(r'^test_webhook', app.views.test_webhook),
 ]
