@@ -11,7 +11,7 @@ def index(request):
 def test_webhook(request):
     req_dict = urlparse.parse_qs(urllib.unquote(request.body))
     print(req_dict)
-    return HttpResponse(json.dumps({"text": "that seems to have done something! I'm not sure what..." }) content_type='application/json')
+    return HttpResponse(json.dumps({"text": "that seems to have done something! I'm not sure what..." }), content_type='application/json')
 
 
 def db(request):
