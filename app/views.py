@@ -204,8 +204,7 @@ def handle_blue_spymaster_selection(active_game, channel, user, button_value):
     if active_game.game_master != user['id']:
         payload = {"text": "Only the game master (<@{}) can set a spymaster", "replace_original": False}
     else:
-        spymaster = Player.objects.get(game__channel_id=channel['id'], slack_id=button_value)
-        spymaster.update(is_spymaster=True)
+        spymaster = Player.objects.filter(game__channel_id=channel['id'], slack_id=button_value).update(is_spymaster=True)
         actions = []
         for red_player in Player.objects.filter(team_color='red'):
             actions.append({
