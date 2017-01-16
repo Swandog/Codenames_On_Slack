@@ -214,7 +214,7 @@ def handle_blue_spymaster_selection(active_game, channel, user, button_value):
                 "value": red_player.slack_id
             })
         payload =  {
-                "text": "<@{}>, choose a Spymaster (clue-giver) for the Red team.".format(active_game.game_master),
+                "text": "<@{}> was set as the Blue spymaster, now choose the Red spymaster.".format(button_value),
                 "response_type": "in_channel",
                 "attachments": [
                     {
@@ -226,5 +226,4 @@ def handle_blue_spymaster_selection(active_game, channel, user, button_value):
                     }
                 ]
             }
-
-    payload = {"text": "set <@{}> to be the blue spymaster".format(user['id']), "replace_original": False}
+    return payload
