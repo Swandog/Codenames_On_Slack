@@ -14,4 +14,4 @@ class Game(models.Model):
 class Player(models.Model):
     slack_id = models.CharField(max_length=30, default=None)
     team_color = models.CharField(max_length=4, default=None)
-    game_id = models.ForeignKey(Game, on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
