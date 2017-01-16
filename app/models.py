@@ -15,3 +15,5 @@ class Player(models.Model):
     slack_id = models.CharField(max_length=30, default=None)
     team_color = models.CharField(max_length=4, default=None)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    username = models.CharField(max_length=30, default=None)
+    is_spymaster = models.BooleanField(default=False)
