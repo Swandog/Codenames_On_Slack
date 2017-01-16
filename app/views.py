@@ -169,22 +169,23 @@ def button(request):
     button_value = req_dict['actions'][0]['value']
     button_name = req_dict['actions'][0]['name']
 
+    active_game_in_channel = Game.objects.get(channel_id=channel['id'])
+
     # detect if the user is picking a team
     if button_name == "blue" or button_name == "red":
-        payload = handle_team_selection(channel, user, button_value)
+        payload = handle_team_selection(active_game_in_channel, channel, user, button_value)
     elif button_name == "blue_spymaster":
-        Player.objects.get(game__channel_id=channel['id'], slack_id=button_value).update(is_spymaster=True)
-        payload = {"text": "set <@{}> to be the blue spymaster".format(user['id']), "replace_original": False}
+        payload = handle_blue_spymaster_selection(active_game_in_channel, channel, user, button_value)
+
 
     return HttpResponse(json.dumps(payload), content_type='application/json')
 
-def handle_team_selection(channel, user, button_value):
+def handle_team_selection(active_game, channel, user, button_value):
     # prevent a player from adding themselves to the game multiple times
-    active_game_in_channel = Game.objects.get(channel_id=channel['id'])
-    if active_game_in_channel.accepting_new_players == False:
+    if active_game.accepting_new_players == False:
         payload = {'text': "Teams for this channel's active game have been locked.", "replace_original": False}
     else:
-        if Player.objects.filter(slack_id=user['id'], game=active_game_in_channel).count() > 0:
+        if Player.objects.filter(slack_id=user['id'], game=active_game).count() > 0:
             payload = {'text': "You've already been added to this game.", "replace_original": False}
         else:
             # create a to-be-deleted player object that fk's a player to the game instance
@@ -192,8 +193,38 @@ def handle_team_selection(channel, user, button_value):
                 slack_id=user['id'],
                 username=user['name'],
                 team_color=button_value,
-                game=active_game_in_channel
+                game=active_game
             )
             payload = {'text': "added <@{}> to the {} team".format(user['name'], button_value), "replace_original": False, "response_type": "in_channel"}
 
     return payload
+
+def handle_blue_spymaster_selection(active_game, channel, user, button_value):
+    # assert the person who clicked the button is the spymaster
+    if active_game.game_master != user['id']:
+        payload = {"text": "Only the game master (<@{}) can set a spymaster", "replace_original": False}
+    else:
+        Player.objects.get(game__channel_id=channel['id'], slack_id=button_value).update(is_spymaster=True)
+        actions = []
+        for red_player in Player.objects.filter(team_color='red'):
+            actions.append({
+                "name": "red_spymaster",
+                "text": red_player.username,
+                "type": "button",
+                "value": red_player.slack_id
+            })
+        payload =  {
+                "text": "<@{}>, choose a Spymaster (clue-giver) for the Red team.".format(active_game.game_master),
+                "response_type": "in_channel",
+                "attachments": [
+                    {
+                        "fallback": "unable to choose spymaster",
+                        "callback_id": "spymaster_chosen",
+                        "color": "#3AA3E3",
+                        "attachment_type": "default",
+                        "actions": actions
+                    }
+                ]
+            }
+
+    payload = {"text": "set <@{}> to be the blue spymaster".format(user['id']), "replace_original": False}
