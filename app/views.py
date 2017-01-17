@@ -237,6 +237,7 @@ def handle_red_spymaster_selection(active_game, channel, user, button_value):
         Player.objects.filter(game__channel_id=channel['id'], slack_id=button_value).update(is_spymaster=True)
         # teams and spymasters have been chosen, show the board
         actions = []
+        attachments = []
         word_set = json.loads(active_game.word_set)
         map_card = json.loads(active_game.map_card)
         for (idx, word) in enumerate(word_set):
@@ -246,32 +247,20 @@ def handle_red_spymaster_selection(active_game, channel, user, button_value):
                 "type": "button",
                 "value": map_card[idx]
             })
+        for x in range(1, 6):
+            attachments.append(
+                {
+                    "fallback": "error picking card",
+                    "callback_id": "card_chosen",
+                    "color": "#3AA3E3",
+                    "attachment_type": "default",
+                    "actions": actions[(x-1)*5:x*5]
+                }
+            )
         payload = {
             "text": "Here's the board!",
             "response_type": "in_channel",
-            "attachments": [
-                {
-                    "fallback": "error picking card",
-                    "callback_id": "card_chosen",
-                    "color": "#3AA3E3",
-                    "attachment_type": "default",
-                    "actions": actions
-                },
-                {
-                    "fallback": "error picking card",
-                    "callback_id": "card_chosen",
-                    "color": "#3AA3E3",
-                    "attachment_type": "default",
-                    "actions": actions
-                },
-                {
-                    "fallback": "error picking card",
-                    "callback_id": "card_chosen",
-                    "color": "#3AA3E3",
-                    "attachment_type": "default",
-                    "actions": actions
-                }
-            ]
+            "attachments": attachments
         }
 
     return payload
