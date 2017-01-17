@@ -256,6 +256,20 @@ def handle_red_spymaster_selection(active_game, channel, user, button_value):
                     "color": "#3AA3E3",
                     "attachment_type": "default",
                     "actions": actions
+                },
+                {
+                    "fallback": "error picking card",
+                    "callback_id": "card_chosen",
+                    "color": "#3AA3E3",
+                    "attachment_type": "default",
+                    "actions": actions
+                },
+                {
+                    "fallback": "error picking card",
+                    "callback_id": "card_chosen",
+                    "color": "#3AA3E3",
+                    "attachment_type": "default",
+                    "actions": actions
                 }
             ]
         }
