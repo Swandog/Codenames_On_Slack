@@ -99,19 +99,19 @@ def close_teams(request):
                     "type": "button",
                     "value": blue_player.slack_id
                 })
-            payload={
-                    "text": "<@{}>, choose a Spymaster (clue-giver) for the Blue team.".format(active_game_in_channel.game_master),
-                    "response_type": "in_channel",
-                    "attachments": [
-                        {
-                            "fallback": "unable to choose spymaster",
-                            "callback_id": "spymaster_chosen",
-                            "color": "#3AA3E3",
-                            "attachment_type": "default",
-                            "actions": actions
-                        }
-                    ]
-                }
+            payload = {
+                "text": "<@{}>, choose a Spymaster (clue-giver) for the *Blue* team.".format(active_game_in_channel.game_master),
+                "response_type": "in_channel",
+                "attachments": [
+                    {
+                        "fallback": "unable to choose spymaster",
+                        "callback_id": "spymaster_chosen",
+                        "color": "#3AA3E3",
+                        "attachment_type": "default",
+                        "actions": actions
+                    }
+                ]
+            }
 
     return HttpResponse({json.dumps(payload)}, content_type='application/json')
 
@@ -176,6 +176,8 @@ def button(request):
         payload = handle_team_selection(active_game_in_channel, channel, user, button_value)
     elif button_name == "blue_spymaster":
         payload = handle_blue_spymaster_selection(active_game_in_channel, channel, user, button_value)
+    elif button_name == "red_spymaster":
+        payload = handle_red_spymaster_selection(active_game_in_channel, channel, user, button_value)
 
 
     return HttpResponse(json.dumps(payload), content_type='application/json')
@@ -204,7 +206,7 @@ def handle_blue_spymaster_selection(active_game, channel, user, button_value):
     if active_game.game_master != user['id']:
         payload = {"text": "Only the game master (<@{}) can set a spymaster", "replace_original": False}
     else:
-        spymaster = Player.objects.filter(game__channel_id=channel['id'], slack_id=button_value).update(is_spymaster=True)
+        Player.objects.filter(game__channel_id=channel['id'], slack_id=button_value).update(is_spymaster=True)
         actions = []
         for red_player in Player.objects.filter(team_color='red'):
             actions.append({
@@ -214,7 +216,7 @@ def handle_blue_spymaster_selection(active_game, channel, user, button_value):
                 "value": red_player.slack_id
             })
         payload =  {
-                "text": "<@{}> was set as the Blue spymaster, now choose the Red spymaster.".format(button_value),
+                "text": "<@{}> was set as the Blue spymaster, now choose the *Red* spymaster.".format(button_value),
                 "response_type": "in_channel",
                 "attachments": [
                     {
@@ -226,4 +228,36 @@ def handle_blue_spymaster_selection(active_game, channel, user, button_value):
                     }
                 ]
             }
+    return payload
+
+def handle_red_spymaster_selection(active_game, channel, user, button_value):
+    if active_game.game_master != user['id']:
+        payload = {"text": "Only the game master (<@{}) can set a spymaster", "replace_original": False}
+    else:
+        Player.objects.filter(game__channel_id=channel['id'], slack_id=button_value).update(is_spymaster=True)
+        # teams and spymasters have been chosen, show the board
+        actions = []
+        word_set = json.loads(active_game.word_set)
+        map_card = json.loads(active_game.map_card)
+        for (idx, word) in enumerate(word_set):
+            actions.append({
+                "name": "card",
+                "text": word,
+                "type": "button",
+                "value": map_card[idx]
+            })
+        payload = {
+            "text": "Here's the board!",
+            "response_type": "in_channel",
+            "attachments": [
+                {
+                    "fallback": "error picking card",
+                    "callback_id": "card_chosen",
+                    "color": "#3AA3E3",
+                    "attachment_type": "default",
+                    "actions": actions
+                }
+            ]
+        }
+
     return payload
