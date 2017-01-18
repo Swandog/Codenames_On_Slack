@@ -86,6 +86,8 @@ def close_teams(request):
         payload = {"text": "There's no active game in the channel, try `/codenames`."}
     else:
         active_game_in_channel = Game.objects.get(channel_id=channel_id)
+        if active_game_in_channel.accepting_new_players == False:
+            return HttpResponse({"text": "Teams are closed for the current game."}, content_type='application/json')
         if user_id != active_game_in_channel.game_master:
             payload = {"text": "Only the game master (<@{}>) can finalize the teams.".format(active_game_in_channel.game_master)}
         else:
@@ -169,9 +171,9 @@ def get_map_card(request):
         payload = {'text': "There is no active game in this channel, try `/codenames`"}
     else:
         if Player.objects.filter(slack_id=user_id).count() == 0:
-            payload = {'text': "You aren't currently in a game of Codenames"}
+            payload = {'text': "You aren't currently in a game of Codenames."}
         elif Player.objects.get(slack_id=user_id).is_spymaster == False:
-            payload = {'text': "You aren't flagged as a spymaster for the current game"}
+            payload = {'text': "You aren't flagged as a spymaster for the current game."}
         else:
             map_card = json.loads(active_game.map_card)
             attachments = []
