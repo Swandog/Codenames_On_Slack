@@ -159,6 +159,41 @@ def generate_mapcard(starting_team):
 
     return ret
 
+def reveal_map_to_red_spymaster(request):
+    req_dict = urlparse.parse_qs(urllib.unquote(request.body))
+    channel_id = req_dict['channel_id'][0]
+    user_id = req_dict['user_id'][0]
+
+    active_game = Game.objects.get(channel_id=channel_id)
+    if active_game.game_master != user_id:
+        payload = {'text': "Only the game master can call this command."}
+    red_spymaster = Player.objects.get(game_id=active_game.id, is_spymaster=True, team_color='red')
+    map_card = json.loads(active_game.map_card)
+    attachments = []
+    actions = []
+    for card_reveal_color in map_card:
+        actions.append({
+            "name": "card",
+            "text": card_reveal_color,
+            "type": "button",
+            "value": "card"
+        })
+    for x in range(1,6):
+        attachments.append(
+            {
+                "fallback": "error displaying mapcard",
+                "callback_id": "red map_card shown",
+                "color": "#3AA3E3",
+                "attachment_type": "default",
+                "actions": actions[(x-1)*5:x*5]
+            }
+        )
+    payload = {
+
+    }
+
+    return HttpResponse(json.dumps(payload), content_type='application/json')
+
 def button(request):
     # parse the request to a dict
     req_dict = json.loads(urlparse.parse_qs(urllib.unquote(request.body))['payload'][0])
