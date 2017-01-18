@@ -172,11 +172,23 @@ def reveal_map_to_red_spymaster(request):
     attachments = []
     actions = []
     for card_reveal_color in map_card:
+        btn_style = ""
+        if card_reveal_color == "R":
+            btn_text = "Red"
+            btn_style = "danger"
+        elif card_reveal_color == "B":
+            btn_text = "Blue"
+            btn_style = "primary"
+        elif card_reveal_color == "X":
+            btn_text = "Assassin"
+        else:
+            btn_text = "Neutral"
         actions.append({
             "name": "card",
-            "text": card_reveal_color,
+            "text": btn_text,
             "type": "button",
-            "value": "card"
+            "value": "card",
+            "style": btn_style
         })
     for x in range(1,6):
         attachments.append(
