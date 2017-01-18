@@ -159,51 +159,56 @@ def generate_mapcard(starting_team):
 
     return ret
 
-def reveal_map_to_red_spymaster(request):
+def get_map_card(request):
+    # restricted to users who are flagged as spymasters for the game
     req_dict = urlparse.parse_qs(urllib.unquote(request.body))
     channel_id = req_dict['channel_id'][0]
     user_id = req_dict['user_id'][0]
 
-    active_game = Game.objects.get(channel_id=channel_id)
-    if active_game.game_master != user_id:
-        payload = {'text': "Only the game master can call this command."}
-    red_spymaster = Player.objects.get(game_id=active_game.id, is_spymaster=True, team_color='red')
-    map_card = json.loads(active_game.map_card)
-    attachments = []
-    actions = []
-    for card_reveal_color in map_card:
-        btn_style = ""
-        if card_reveal_color == "R":
-            btn_text = "Red"
-            btn_style = "danger"
-        elif card_reveal_color == "B":
-            btn_text = "Blue"
-            btn_style = "primary"
-        elif card_reveal_color == "X":
-            btn_text = "Assassin"
+    if Game.objects.filter(channel_id=channel_id).count() == 0:
+        payload = {'text': "There is no active game in this channel, try `/codenames`"}
+    else:
+        if Player.objects.filter(slack_id=user_id).count() == 0:
+            payload = {'text': "You aren't currently in a game of Codenames"}
+        elif Player.objects.get(slack_id=user_id).is_spymaster == False:
+            payload = {'text': "You aren't flagged as a spymaster for the current game"}
         else:
-            btn_text = "Neutral"
-        actions.append({
-            "name": "card",
-            "text": btn_text,
-            "type": "button",
-            "value": "card",
-            "style": btn_style
-        })
-    for x in range(1,6):
-        attachments.append(
-            {
-                "fallback": "error displaying mapcard",
-                "callback_id": "red map_card shown",
-                "color": "#3AA3E3",
-                "attachment_type": "default",
-                "actions": actions[(x-1)*5:x*5]
+            map_card = json.loads(active_game.map_card)
+            attachments = []
+            actions = []
+            for card_reveal_color in map_card:
+                btn_style = ""
+                if card_reveal_color == "R":
+                    btn_text = "Red"
+                    btn_style = "danger"
+                elif card_reveal_color == "B":
+                    btn_text = "Blue"
+                    btn_style = "primary"
+                elif card_reveal_color == "X":
+                    btn_text = "Assassin"
+                else:
+                    btn_text = "Neutral"
+                actions.append({
+                    "name": "card",
+                    "text": btn_text,
+                    "type": "button",
+                    "value": "card",
+                    "style": btn_style
+                })
+            for x in range(1,6):
+                attachments.append(
+                    {
+                        "fallback": "error displaying mapcard",
+                        "callback_id": "red map_card shown",
+                        "color": "#3AA3E3",
+                        "attachment_type": "default",
+                        "actions": actions[(x-1)*5:x*5]
+                    }
+                )
+            payload = {
+                "text": "Here's the map card!",
+                "attachments": attachments
             }
-        )
-    payload = {
-        "text": "Here's the map card!",
-        "attachments": attachments
-    }
 
     return HttpResponse(json.dumps(payload), content_type='application/json')
 
