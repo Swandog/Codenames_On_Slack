@@ -189,7 +189,8 @@ def reveal_map_to_red_spymaster(request):
             }
         )
     payload = {
-
+        "text": "Here's the map card!",
+        "attachments": attachments
     }
 
     return HttpResponse(json.dumps(payload), content_type='application/json')
