@@ -170,6 +170,7 @@ def get_map_card(request):
     if Game.objects.filter(channel_id=channel_id).count() == 0:
         payload = {'text': "There is no active game in this channel, try `/codenames`"}
     else:
+        active_game = Game.objects.get(channel_id=channel_id)
         if Player.objects.filter(slack_id=user_id).count() == 0:
             payload = {'text': "You aren't currently in a game of Codenames."}
         elif Player.objects.get(slack_id=user_id).is_spymaster == False:
