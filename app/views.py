@@ -180,7 +180,7 @@ def get_map_card(request):
             word_set = json.loads(active_game.word_set)
             attachments = []
             actions = []
-            for (idx, color) in map_card:
+            for (idx, color) in enumerate(map_card):
                 btn_style = ""
                 if color == "R":
                     btn_style = "danger"
