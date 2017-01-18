@@ -177,20 +177,21 @@ def get_map_card(request):
             payload = {'text': "You aren't flagged as a spymaster for the current game."}
         else:
             map_card = json.loads(active_game.map_card)
+            word_set = json.loads(active_game.word_set)
             attachments = []
             actions = []
-            for card_reveal_color in map_card:
+            for (idx, color) in map_card:
                 btn_style = ""
-                if card_reveal_color == "R":
-                    btn_text = "Red"
+                if color == "R":
                     btn_style = "danger"
-                elif card_reveal_color == "B":
-                    btn_text = "Blue"
+                    btn_text = word_set[idx]
+                elif color == "B":
                     btn_style = "primary"
-                elif card_reveal_color == "X":
-                    btn_text = "Assassin"
+                    btn_text = word_set[idx]
+                elif color == "X":
+                    btn_text = "*ASSASSIN*"
                 else:
-                    btn_text = "Neutral"
+                    btn_text = word_set[idx]
                 actions.append({
                     "name": "card",
                     "text": btn_text,
