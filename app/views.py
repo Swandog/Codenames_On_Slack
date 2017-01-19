@@ -229,6 +229,7 @@ def button(request):
     active_game_in_channel = Game.objects.get(channel_id=channel['id'])
 
     # detect if the user is picking a team
+    print(button_name)
     if button_name == "blue" or button_name == "red":
         payload = handle_team_selection(active_game_in_channel, channel, user, button_value)
     elif button_name == "blue_spymaster":
@@ -236,8 +237,7 @@ def button(request):
     elif button_name == "red_spymaster":
         payload = handle_red_spymaster_selection(active_game_in_channel, channel, user, button_value)
     elif button_name == "map_card":
-        payload = {'text': "Good job", "replace_original": False}
-
+        payload = {'text': "Good job!", "replace_original": False}
 
     return HttpResponse(json.dumps(payload), content_type='application/json')
 
