@@ -239,6 +239,7 @@ def button(request):
     elif button_name == "map_card":
         payload = {'text': "Good job!", "replace_original": False}
     elif button_name == "card":
+        pass
 
     return HttpResponse(json.dumps(payload), content_type='application/json')
 
