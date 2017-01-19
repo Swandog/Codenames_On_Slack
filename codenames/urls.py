@@ -20,4 +20,5 @@ urlpatterns = [
     url(r'^close_teams', app.views.close_teams),
     url(r'^test_webhook', app.views.test_webhook),
     url(r'^get_map_card', app.views.show_map_card),
+    url(r'^give_hint', app.views.give_hint),
 ]
