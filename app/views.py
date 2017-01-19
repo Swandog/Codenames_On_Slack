@@ -189,7 +189,7 @@ def get_map_card(request):
                     btn_style = "primary"
                     btn_text = word_set[idx]
                 elif color == "X":
-                    btn_text = "*ASSASSIN*"
+                    btn_text = "*{}*".format(word_set[idx])
                 else:
                     btn_text = word_set[idx]
                 actions.append({
