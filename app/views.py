@@ -339,3 +339,10 @@ def handle_red_spymaster_selection(active_game, channel, user, button_value):
         }
 
     return payload
+
+def give_hint(request):
+    req_dict = urlparse.parse_qs(urllib.unquote(request.body))
+    user_name = req_dict['user_name'][0]
+    user_id = req_dict['user_id'][0]
+    channel_id = req_dict['channel_id'][0]
+    print(req_dict)
