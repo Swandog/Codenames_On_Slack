@@ -193,10 +193,10 @@ def get_map_card(request):
                 else:
                     btn_text = word_set[idx]
                 actions.append({
-                    "name": "card",
+                    "name": "map_card",
                     "text": btn_text,
                     "type": "button",
-                    "value": "card",
+                    "value": "map_card",
                     "style": btn_style
                 })
             for x in range(1,6):
@@ -235,6 +235,8 @@ def button(request):
         payload = handle_blue_spymaster_selection(active_game_in_channel, channel, user, button_value)
     elif button_name == "red_spymaster":
         payload = handle_red_spymaster_selection(active_game_in_channel, channel, user, button_value)
+    elif button_name == "map_card":
+        payload = {'text': "Good job", "replace_original": False}
 
 
     return HttpResponse(json.dumps(payload), content_type='application/json')
