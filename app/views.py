@@ -1,6 +1,8 @@
 import os, random, json, requests, urllib, urlparse
 from django.shortcuts import render
 from django.http import HttpResponse
+from urllib2 import Request, urlopen, URLError
+
 
 from .models import Greeting, Game, Player
 
@@ -145,9 +147,9 @@ def determine_starting_team(map_card):
             elif card == "B":
                 b_count += 1
         if r_count > b_count:
-            return "Red"
+            return "red"
         else:
-            return "Blue"
+            return "blue"
 
 def generate_mapcard(starting_team):
     num_red_agents = 8
