@@ -38,6 +38,7 @@ def initialize_game(request):
         Game.objects.create(
             map_card = json.dumps(game_board_data["map_card"]),
             word_set = json.dumps(game_board_data["words_list"]),
+            current_team_playing = game_board_data["starting_team"],
             channel_id = channel_id,
             game_master = user_id
         )
@@ -129,11 +130,24 @@ def generate_wordset():
     words_list = [words[idx] for idx in random.sample(range(0, total_num_words -1), 25)]
     starting_team = ["red", "blue"][random.randint(0,1)]
     map_card = generate_mapcard(starting_team)
+    staring_team = determine_starting_team(map_card)
 
-    data = {"words_list": words_list, "map_card": map_card}
+    data = {"words_list": words_list, "map_card": map_card, "starting_team": starting_team}
 
     return data
 
+def determine_starting_team(map_card):
+        r_count = 0
+        b_count = 0
+        for card in map_card:
+            if card == "R":
+                r_count += 1
+            elif card == "B":
+                b_count += 1
+        if r_count > b_count:
+            return "Red"
+        else:
+            return "Blue"
 
 def generate_mapcard(starting_team):
     num_red_agents = 8
@@ -161,7 +175,7 @@ def generate_mapcard(starting_team):
 
     return ret
 
-def get_map_card(request):
+def show_map_card(request):
     # restricted to users who are flagged as spymasters for the game
     req_dict = urlparse.parse_qs(urllib.unquote(request.body))
     channel_id = req_dict['channel_id'][0]
@@ -319,7 +333,7 @@ def handle_red_spymaster_selection(active_game, channel, user, button_value):
                 }
             )
         payload = {
-            "text": "Here's the board!",
+            "text": "Here's the board. {} team goes first!".format(active_game.current_team_playing),
             "response_type": "in_channel",
             "attachments": attachments
         }
