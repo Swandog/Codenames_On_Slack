@@ -375,7 +375,7 @@ def give_hint(request):
             print(num_guesses)
 
             payload =  {
-                    "text": "<@{}>'s hint: *{}*, *{}* guesses.".format(hint.strip(), num_guesses),
+                    "text": "<@{}>'s hint: *{}*, *{}* guesses.".format(word.strip(), num_guesses),
                     "response_type": "in_channel",
                 }
         except:
