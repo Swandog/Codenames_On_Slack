@@ -348,6 +348,8 @@ def give_hint(request):
     user_id = req_dict['user_id'][0]
     channel_id = req_dict['channel_id'][0]
 
+    print(req_dict)
+
     print("GETS HERE 1")
 
     current_game = Game.objects.get(channel_id=channel_id)
