@@ -355,7 +355,8 @@ def give_hint(request):
         word = formatted_hint[0]
         num_guesses = formatted_hint[1]
 
-        if validate_word(word.strip())
+        if validate_word(word.strip()):
+            print('200')
     except:
         payload = {"replace_original": False, "text": "Your hint was improperly formatted."}
     return HttpResponse(json.dumps(payload), content_type='application/json')
