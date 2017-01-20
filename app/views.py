@@ -367,7 +367,12 @@ def give_hint(request):
             hint = req_dict['text'][0]
             formatted_hint = hint.split(",")
             word = formatted_hint[0]
-            num_guesses = formatted_hint[1]
+            num_guesses = int(formatted_hint[1])
+
+            print(hint)
+            print(formatted_hint)
+            print(word)
+            print(num_guesses)
 
             payload =  {
                     "text": "<@{}>'s hint: *{}*, *{}* guesses.".format(hint.strip(), num_guesses),
