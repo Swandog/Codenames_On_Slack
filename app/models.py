@@ -11,6 +11,7 @@ class Game(models.Model):
     game_master = models.CharField(max_length=30, default=None)
     accepting_new_players = models.BooleanField(default=True)
     current_team_playing = models.CharField(max_length=4, blank=True, default="")
+    num_guesses_left = models.IntegerField(default=0)
 
 class Player(models.Model):
     slack_id = models.CharField(max_length=30, default=None)

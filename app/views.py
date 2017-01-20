@@ -347,27 +347,26 @@ def give_hint(request):
     user_name = req_dict['user_name'][0]
     user_id = req_dict['user_id'][0]
     channel_id = req_dict['channel_id'][0]
-    print(req_dict)
 
-    try:
-        hint = req_dict['text'][0]
-        formatted_hint = hint.split(",")
-        word = formatted_hint[0]
-        num_guesses = formatted_hint[1]
+    current_game = Game.objects.get(channel_id=channel_id)
+    requesting_player = Player.objects.get(slack_id=user_id, game_id=current_game.id)
+    current_team_playing = current_game.current_team_playing
 
-        if validate_word(word.strip()):
-            print('200')
-    except:
-        payload = {"replace_original": False, "text": "Your hint was improperly formatted."}
+    if requesting_player.team_color != current_team_playing:
+        payload = {"replace_original": False, "text": "Please wait for the {} team to finish their turn.".format(current_team_playing)}
+    elif requesting_player.is_spymater == False:
+        payload = {"replace_original": False, "text": "You aren't the spymaster for your team."}
+    else:
+        try:
+            hint = req_dict['text'][0]
+            formatted_hint = hint.split(",")
+            word = formatted_hint[0]
+            num_guesses = formatted_hint[1]
+
+            payload =  {
+                    "text": "<@{}>'s hint: *{}*, *{}* guesses.".format(hint.strip(), num_guesses),
+                    "response_type": "in_channel",
+                }
+        except:
+            payload = {"replace_original": False, "text": "Your hint was improperly formatted."}
     return HttpResponse(json.dumps(payload), content_type='application/json')
-
-def validate_word(word):
-    request = Request('https://wordsapiv1.p.mashape.com/words/{}'.format(word))
-
-    try:
-    	response = urlopen(request)
-    	read_response = response.read()
-        print("RESPONSE {}".format(response))
-        print("READ RESPONSE {}".format(response))
-    except URLError, e:
-        print 'No kittez. Got an error code:', e
