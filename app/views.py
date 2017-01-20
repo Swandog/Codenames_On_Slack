@@ -355,6 +355,8 @@ def give_hint(request):
     requesting_player = Player.objects.get(slack_id=user_id, game_id=current_game.id)
     current_team_playing = current_game.current_team_playing
 
+    print(requesting_player)
+    print(current_team_playing)
     if requesting_player.team_color != current_team_playing:
         print(1)
         payload = {"replace_original": False, "text": "Please wait for the {} team to finish their turn.".format(current_team_playing)}
