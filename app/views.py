@@ -348,3 +348,25 @@ def give_hint(request):
     user_id = req_dict['user_id'][0]
     channel_id = req_dict['channel_id'][0]
     print(req_dict)
+
+    try:
+        hint = req_dict['text'][0]
+        formatted_hint = hint.split(",")
+        word = formatted_hint[0]
+        num_guesses = formatted_hint[1]
+
+        if validate_word(word.strip())
+    except:
+        payload = {"replace_original": False, "text": "Your hint was improperly formatted."}
+    return HttpResponse(json.dumps(payload), content_type='application/json')
+
+def validate_word(word):
+    request = Request('https://wordsapiv1.p.mashape.com/words/{}'.format(word))
+
+    try:
+    	response = urlopen(request)
+    	read_response = response.read()
+        print("RESPONSE {}".format(response))
+        print("READ RESPONSE {}".format(response))
+    except URLError, e:
+        print 'No kittez. Got an error code:', e
