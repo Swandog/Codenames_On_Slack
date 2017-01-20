@@ -381,4 +381,5 @@ def give_hint(request):
                 }
         except:
             payload = {"replace_original": False, "text": "Your hint was improperly formatted."}
+    print(payload)
     return HttpResponse(json.dumps(payload), content_type='application/json')
