@@ -357,6 +357,7 @@ def give_hint(request):
 
     print(requesting_player)
     print(current_team_playing)
+
     if requesting_player.team_color != current_team_playing:
         print(1)
         payload = {"replace_original": False, "text": "Please wait for the {} team to finish their turn.".format(current_team_playing)}
