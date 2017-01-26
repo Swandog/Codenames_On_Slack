@@ -255,7 +255,7 @@ def button(request):
     elif button_name == "map_card":
         payload = {'text': "Good job!", "replace_original": False}
     elif button_name == "card":
-        pass
+        payload = {'text': button_value, 'replace_original': False}
 
     return HttpResponse(json.dumps(payload), content_type='application/json')
 
@@ -360,17 +360,17 @@ def give_hint(request):
     elif requesting_player.is_spymaster == False:
         payload = {"replace_original": False, "text": "You aren't the spymaster for your team."}
     else:
-        # try:
-        hint = req_dict['text'][0]
-        formatted_hint = hint.split(",")
-        word = formatted_hint[0]
-        num_guesses = int(formatted_hint[1])
+        try:
+            hint = req_dict['text'][0]
+            formatted_hint = hint.split(",")
+            word = formatted_hint[0]
+            num_guesses = int(formatted_hint[1])
 
-        payload =  {
-                "text": "<@{}>'s hint: '*{}*', *{}*".format(user_id, word.strip().upper(), num_guesses),
-                "response_type": "in_channel",
-            }
-        # except:
-        #     payload = {"replace_original": False, "text": "Your hint was improperly formatted."}
+            payload =  {
+                    "text": "<@{}>'s hint: *'{}'*, *{}*".format(user_id, word.strip().upper(), num_guesses),
+                    "response_type": "in_channel",
+                }
+        except:
+            payload = {"replace_original": False, "text": "Your hint was improperly formatted."}
     print(payload)
     return HttpResponse(json.dumps(payload), content_type='application/json')
