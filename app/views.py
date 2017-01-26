@@ -2,9 +2,9 @@ import os, random, json, requests, urllib, urlparse
 from django.shortcuts import render
 from django.http import HttpResponse
 from urllib2 import Request, urlopen, URLError
-
-
 from .models import Greeting, Game, Player
+
+color_emoji_map = {"R": ":red_circle", "B": ":large_blue_circle:", "X": ":black_circle:"}
 
 # Create your views here.
 def index(request):
@@ -320,7 +320,7 @@ def handle_red_spymaster_selection(active_game, channel, user, button_value):
         for (idx, word) in enumerate(word_set):
             actions.append({
                 "name": "card",
-                "text": word,
+                "text": color_emoji_map[map_card[idx]] + word,
                 "type": "button",
                 "value": map_card[idx]
             })
@@ -329,7 +329,6 @@ def handle_red_spymaster_selection(active_game, channel, user, button_value):
                 {
                     "fallback": "error picking card",
                     "callback_id": "card_chosen",
-                    "color": "#3AA3E3",
                     "attachment_type": "default",
                     "actions": actions[(x-1)*5:x*5]
                 }
