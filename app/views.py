@@ -320,7 +320,7 @@ def handle_red_spymaster_selection(active_game, channel, user, button_value):
         for (idx, word) in enumerate(word_set):
             actions.append({
                 "name": "card",
-                "text": word,
+                "text": ":small_blue_diamond: {}".format(word),
                 "type": "button",
                 "value": map_card[idx]
             })
