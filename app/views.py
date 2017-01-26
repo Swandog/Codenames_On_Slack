@@ -210,7 +210,7 @@ def show_map_card(request):
                     btn_text = word_set[idx]
                 actions.append({
                     "name": "map_card",
-                    "text": ":small_blue_diamond: {}".format(btn_text),
+                    "text": ":large_blue_circle: {}".format(btn_text),
                     "type": "button",
                     "value": "map_card",
                     "style": btn_style
