@@ -356,29 +356,21 @@ def give_hint(request):
     current_team_playing = current_game.current_team_playing
 
     if requesting_player.team_color != current_team_playing:
-        print(1)
         payload = {"replace_original": False, "text": "Please wait for the {} team to finish their turn.".format(current_team_playing)}
     elif requesting_player.is_spymaster == False:
-        print(2)
         payload = {"replace_original": False, "text": "You aren't the spymaster for your team."}
     else:
-        print(3)
-        try:
-            hint = req_dict['text'][0]
-            formatted_hint = hint.split(",")
-            word = formatted_hint[0]
-            num_guesses = int(formatted_hint[1])
+        # try:
+        hint = req_dict['text'][0]
+        formatted_hint = hint.split(",")
+        word = formatted_hint[0]
+        num_guesses = int(formatted_hint[1])
 
-            print(hint)
-            print(formatted_hint)
-            print(word)
-            print(num_guesses)
-
-            payload =  {
-                    "text": "<@{}>'s hint: *{}*, *{}* guesses.".format(word.strip(), num_guesses),
-                    "response_type": "in_channel",
-                }
-        except:
-            payload = {"replace_original": False, "text": "Your hint was improperly formatted."}
+        payload =  {
+                "text": "<@{}>'s hint: *{}*, *{}* guesses.".format(word.strip(), num_guesses),
+                "response_type": "in_channel",
+            }
+        # except:
+        #     payload = {"replace_original": False, "text": "Your hint was improperly formatted."}
     print(payload)
     return HttpResponse(json.dumps(payload), content_type='application/json')
