@@ -199,10 +199,8 @@ def show_map_card(request):
             for (idx, color) in enumerate(map_card):
                 btn_style = ""
                 if color == "R":
-                    btn_style = "danger"
                     btn_text = color_emoji_map[map_card[idx]] + word_set[idx]
                 elif color == "B":
-                    btn_style = "primary"
                     btn_text = color_emoji_map[map_card[idx]] + word_set[idx]
                 elif color == "X":
                     btn_text = color_emoji_map[map_card[idx]] + word_set[idx]
@@ -213,7 +211,6 @@ def show_map_card(request):
                     "text": btn_text,
                     "type": "button",
                     "value": "map_card",
-                    "style": btn_style
                 })
             for x in range(1,6):
                 attachments.append(
