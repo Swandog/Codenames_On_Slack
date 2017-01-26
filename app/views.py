@@ -210,7 +210,7 @@ def show_map_card(request):
                     btn_text = word_set[idx]
                 actions.append({
                     "name": "map_card",
-                    "text": btn_text + "    ",
+                    "text": ":small_blue_diamond: {}".format(btn_text),
                     "type": "button",
                     "value": "map_card",
                     "style": btn_style
@@ -255,7 +255,7 @@ def button(request):
     elif button_name == "map_card":
         payload = {'text': "Good job!", "replace_original": False}
     elif button_name == "card":
-        payload = {'text': button_value, 'replace_original': False}
+        payload = {'text': button_value, 'replace_original': Fla}
 
     return HttpResponse(json.dumps(payload), content_type='application/json')
 
@@ -320,7 +320,7 @@ def handle_red_spymaster_selection(active_game, channel, user, button_value):
         for (idx, word) in enumerate(word_set):
             actions.append({
                 "name": "card",
-                "text": ":small_blue_diamond: {}".format(word),
+                "text": word,
                 "type": "button",
                 "value": map_card[idx]
             })
