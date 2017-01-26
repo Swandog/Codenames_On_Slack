@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from urllib2 import Request, urlopen, URLError
 from .models import Greeting, Game, Player
 
-color_emoji_map = {"R": ":red_circle", "B": ":large_blue_circle:", "X": ":black_circle:"}
+color_emoji_map = {"R": ":red_circle:", "B": ":large_blue_circle:", "X": ":black_circle:"}
 
 # Create your views here.
 def index(request):
@@ -210,7 +210,7 @@ def show_map_card(request):
                     btn_text = word_set[idx]
                 actions.append({
                     "name": "map_card",
-                    "text": ":large_blue_circle: {}".format(btn_text),
+                    "text": btn_text,
                     "type": "button",
                     "value": "map_card",
                     "style": btn_style
