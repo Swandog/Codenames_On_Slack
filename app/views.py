@@ -200,12 +200,12 @@ def show_map_card(request):
                 btn_style = ""
                 if color == "R":
                     btn_style = "danger"
-                    btn_text = word_set[idx]
+                    btn_text = color_emoji_map[map_card[idx]] + word_set[idx]
                 elif color == "B":
                     btn_style = "primary"
-                    btn_text = word_set[idx]
+                    btn_text = color_emoji_map[map_card[idx]] + word_set[idx]
                 elif color == "X":
-                    btn_text = "*{}*".format(word_set[idx])
+                    btn_text = color_emoji_map[map_card[idx]] + word_set[idx]
                 else:
                     btn_text = word_set[idx]
                 actions.append({
@@ -320,7 +320,7 @@ def handle_red_spymaster_selection(active_game, channel, user, button_value):
         for (idx, word) in enumerate(word_set):
             actions.append({
                 "name": "card",
-                "text": color_emoji_map[map_card[idx]] + word,
+                "text": word,
                 "type": "button",
                 "value": map_card[idx]
             })
