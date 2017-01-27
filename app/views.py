@@ -235,6 +235,7 @@ def button(request):
     callback_id = req_dict["callback_id"] #ex: wopr_game
     channel = req_dict["channel"] #ex: {u'id': u'C3NUEG0S0', u'name': u'game'}
     user = req_dict["user"] #ex: {u'id': u'U3N3Z66TB', u'name': u'dustin'}
+    print(req_dict)
     button_value = req_dict['actions'][0]['value']
     button_name = req_dict['actions'][0]['name']
     button_text = req_dict['actions'][0]['text']
