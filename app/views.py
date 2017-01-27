@@ -263,7 +263,7 @@ def user_select_button_with_text(active_game, button_text):
     except ValueError:
         revealed_cards = []
 
-    revealed_cards.append(word_set.index(button_text))
+    revealed_cards.append(button_text)
     active_game.revealed_cards = json.dumps(revealed_cards)
     map_card = json.loads(active_game.map_card)
 
@@ -273,7 +273,7 @@ def user_select_button_with_text(active_game, button_text):
     for (idx, word) in enumerate(word_set):
         button_color = map_card[idx]
         try:
-            revealed_cards.index[idx]
+            revealed_cards.index[word]
             actions.append({
                 "name": "card revealed",
                 "text": "{} {}".format(color_emoji_map[button_color], word),

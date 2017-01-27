@@ -12,7 +12,7 @@ class Game(models.Model):
     accepting_new_players = models.BooleanField(default=True)
     current_team_playing = models.CharField(max_length=4, blank=True, default="")
     num_guesses_left = models.IntegerField(default=0)
-    revealed_cards = models.CharField(max_length=200, blank=True, default="")
+    revealed_cards = models.CharField(max_length=500, blank=True, default="")
 
 class Player(models.Model):
     slack_id = models.CharField(max_length=30, default=None)
