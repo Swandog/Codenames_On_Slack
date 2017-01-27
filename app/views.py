@@ -234,14 +234,13 @@ def button(request):
     callback_id = req_dict["callback_id"] #ex: wopr_game
     channel = req_dict["channel"] #ex: {u'id': u'C3NUEG0S0', u'name': u'game'}
     user = req_dict["user"] #ex: {u'id': u'U3N3Z66TB', u'name': u'dustin'}
-    print(req_dict)
+    print(req_dict['actions'])
     button_value = req_dict['actions'][0]['value']
     button_name = req_dict['actions'][0]['name']
     button_text = req_dict['actions'][0]['text']
     active_game_in_channel = Game.objects.get(channel_id=channel['id'])
 
     # detect if the user is picking a team
-    print(button_name)
     if button_name == "blue" or button_name == "red":
         payload = handle_team_selection(active_game_in_channel, channel, user, button_value)
     elif button_name == "blue_spymaster":
