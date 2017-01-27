@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from urllib2 import Request, urlopen, URLError
 from .models import Greeting, Game, Player
 
-color_emoji_map = {"R": ":red_circle:", "B": ":large_blue_circle:", "X": ":black_circle:"}
+color_emoji_map = {"R": ":red_circle:", "B": ":large_blue_circle:", "X": ":black_circle:", "":":white_circle:"}
 
 # Create your views here.
 def index(request):
