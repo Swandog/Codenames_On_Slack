@@ -301,7 +301,6 @@ def user_select_button_with_text(active_game, button_text):
         "text": "/shrug",
         "response_type": "in_channel",
         "attachments": attachments,
-        "replace_original": False
     }
 
     return payload
