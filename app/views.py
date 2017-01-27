@@ -246,10 +246,11 @@ def button(request):
         payload = handle_blue_spymaster_selection(active_game_in_channel, channel, user, button_value)
     elif button_name == "red_spymaster":
         payload = handle_red_spymaster_selection(active_game_in_channel, channel, user, button_value)
-    elif button_name == "map_card":
-        payload = {'text': "Good job!", "replace_original": False}
     elif button_name == "card":
-        payload = user_select_button_with_text(active_game_in_channel, button_text)
+        payload = user_select_button_with_text(active_game_in_channel, button_name)
+    else:
+        payload = {'text': "Good job!", "replace_original": False}
+
 
     return HttpResponse(json.dumps(payload), content_type='application/json')
 
@@ -274,18 +275,18 @@ def user_select_button_with_text(active_game, button_text):
         try:
             revealed_cards.index[idx]
             actions.append({
-                "name": word,
+                "name": "card revealed",
                 "text": "{} {}".format(color_emoji_map[button_color], word),
                 "type": "button",
-                "value": "revealed"
+                "value": word
 
             })
         except ValueError:
             actions.append({
-                "name": word,
+                "name": "card",
                 "text": word,
                 "type": "button",
-                "value": button_color
+                "value": word
             })
     for x in range (1, 6):
         attachments.append(
@@ -365,10 +366,10 @@ def handle_red_spymaster_selection(active_game, channel, user, button_value):
         map_card = json.loads(active_game.map_card)
         for (idx, word) in enumerate(word_set):
             actions.append({
-                "name": word,
+                "name": "card",
                 "text": word,
                 "type": "button",
-                "value": map_card[idx]
+                "value": word
             })
         for x in range(1, 6):
             attachments.append(
