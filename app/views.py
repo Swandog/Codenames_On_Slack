@@ -175,6 +175,27 @@ def generate_mapcard(starting_team):
 
     return ret
 
+def cancel_game(request):
+    req_dict = urlparse.parse_qs(urllib.unquote(request.body))
+    channel_id = req_dict['channel_id'][0]
+    user_id = req_dict['user_id'][0]
+
+    current_game = Game.objects.get(channel_id=channel_id)
+    if current_game.game_master == user_id:
+        Player.objects.filter(game_id=current_game.id).delete()
+        Game.objects.filter(channel_id=channel_id).delete()
+        payload =  {
+                "text": "Successfully deleted all game data!",
+                "response_type": "in_channel",
+            }
+    else:
+        payload =  {
+                "text": "Only the game's master/creator can do that!",
+                "response_type": "in_channel",
+            }
+    return HttpResponse(json.dumps(payload), content_type='application/json')
+
+
 def show_map_card(request):
     # restricted to users who are flagged as spymasters for the game
     req_dict = urlparse.parse_qs(urllib.unquote(request.body))
