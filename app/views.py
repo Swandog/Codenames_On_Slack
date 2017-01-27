@@ -272,8 +272,7 @@ def user_select_button_with_text(active_game, button_text):
     actions = []
     for (idx, word) in enumerate(word_set):
         button_color = map_card[idx]
-        try:
-            revealed_cards.index[word]
+        if word in revealed_cards:
             actions.append({
                 "name": "card revealed",
                 "text": "{} {}".format(color_emoji_map[button_color], word),
@@ -281,7 +280,7 @@ def user_select_button_with_text(active_game, button_text):
                 "value": word
 
             })
-        except ValueError:
+        else:
             actions.append({
                 "name": "card",
                 "text": word,
