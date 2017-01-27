@@ -57,14 +57,13 @@ def initialize_game(request):
                         "actions": [
                             {
                                 "name": "blue",
-                                "text": "Blue Team",
+                                "text": ":large_blue_circle: Blue Team",
                                 "type": "button",
                                 "value": "blue",
                             },
                             {
                                 "name": "red",
-                                "text": "Red Team",
-                                "style": "danger",
+                                "text": ":red_circle: Red Team",
                                 "type": "button",
                                 "value": "red",
                             }
@@ -238,8 +237,7 @@ def button(request):
     user = req_dict["user"] #ex: {u'id': u'U3N3Z66TB', u'name': u'dustin'}
     button_value = req_dict['actions'][0]['value']
     button_name = req_dict['actions'][0]['name']
-    print(req_dict)
-
+    button_text = req_dict['actions'][0]['text']
     active_game_in_channel = Game.objects.get(channel_id=channel['id'])
 
     # detect if the user is picking a team
@@ -253,12 +251,61 @@ def button(request):
     elif button_name == "map_card":
         payload = {'text': "Good job!", "replace_original": False}
     elif button_name == "card":
-        payload = user_select_button_with_text()
+        payload = user_select_button_with_text(active_game_in_channel, button_text)
 
     return HttpResponse(json.dumps(payload), content_type='application/json')
 
-def user_select_button_with_text():
-    pass
+def user_select_button_with_text(active_game, button_text):
+    # get the index of the card to be revealed
+    word_set = json.loads(active_game.word_set)
+    revealed_cards = active_game.revealed_cards
+    if active_game.revealed_cards == None:
+        revealed_cards = []
+    else:
+        revealed_cards = json.loads(active_game.revealed_cards)
+
+    revealed_cards.append(word_set.index(button_text))
+    active_game.revealed_cards = json.dumps(revealed_cards)
+    map_card = json.loads(active_game.map_card)
+
+    # now build the message
+    attachments = []
+    actions = []
+    for (idx, word) in enumerate(word_set):
+        button_color = map_card[idx]
+        try:
+            revealed_cards.index[idx]
+            actions.append({
+                "name": "card",
+                "text": "{} {}".format(color_emoji_map[button_color], word),
+                "type": "button",
+                "value": "revealed"
+
+            })
+        except ValueError:
+            actions.append({
+                "name": "card",
+                "text": word,
+                "type": "button",
+                "value": button_color
+            })
+    for x in range (1, 6):
+        attachments.append(
+            {
+                "fallback": "error picking card",
+                "callback_id": "card_chosen",
+                "attachment_type": "default",
+                "actions": actions[(x-1)*5:x*5]
+            }
+        )
+    payload = {
+        "text": "/shrug",
+        "response_type": "in_channel",
+        "attachments": attachments,
+        "replace_original": False
+    }
+
+    return payload
 
 def handle_team_selection(active_game, channel, user, button_value):
     # prevent a player from adding themselves to the game multiple times
@@ -347,9 +394,6 @@ def give_hint(request):
     user_name = req_dict['user_name'][0]
     user_id = req_dict['user_id'][0]
     channel_id = req_dict['channel_id'][0]
-
-    print(req_dict)
-
 
     current_game = Game.objects.get(channel_id=channel_id)
     requesting_player = Player.objects.get(slack_id=user_id, game_id=current_game.id)
