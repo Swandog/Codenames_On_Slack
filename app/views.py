@@ -234,7 +234,6 @@ def button(request):
     callback_id = req_dict["callback_id"] #ex: wopr_game
     channel = req_dict["channel"] #ex: {u'id': u'C3NUEG0S0', u'name': u'game'}
     user = req_dict["user"] #ex: {u'id': u'U3N3Z66TB', u'name': u'dustin'}
-    print(req_dict['actions'])
     button_value = req_dict['actions'][0]['value']
     button_name = req_dict['actions'][0]['name']
     active_game_in_channel = Game.objects.get(channel_id=channel['id'])
@@ -247,14 +246,19 @@ def button(request):
     elif button_name == "red_spymaster":
         payload = handle_red_spymaster_selection(active_game_in_channel, channel, user, button_value)
     elif button_name == "card":
-        payload = user_select_button_with_text(active_game_in_channel, button_value)
+        payload = user_select_button_with_text(active_game_in_channel, button_value, user['id'])
     else:
         payload = {'text': "Good job!", "replace_original": False}
 
     return HttpResponse(json.dumps(payload), content_type='application/json')
 
-def user_select_button_with_text(active_game, button_text):
+def user_select_button_with_text(active_game, button_text, user_id):
     # get the index of the card to be revealed
+    player_obj = Player.objects.get(game_id=active_game.id, slack_id=user_id)
+    if player_obj.is_spymaster == True:
+        return {"replace_original": False, "text": "A spymaster can't pick cards."}
+
+
     word_set = json.loads(active_game.word_set)
     revealed_cards = active_game.revealed_cards
 
@@ -298,7 +302,7 @@ def user_select_button_with_text(active_game, button_text):
             }
         )
     payload = {
-        "text": "/shrug",
+        "text": "Here's the updated board!",
         "response_type": "in_channel",
         "attachments": attachments,
     }
