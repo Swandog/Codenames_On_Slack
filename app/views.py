@@ -251,17 +251,17 @@ def button(request):
     else:
         payload = {'text': "Good job!", "replace_original": False}
 
-
     return HttpResponse(json.dumps(payload), content_type='application/json')
 
 def user_select_button_with_text(active_game, button_text):
     # get the index of the card to be revealed
     word_set = json.loads(active_game.word_set)
     revealed_cards = active_game.revealed_cards
-    if active_game.revealed_cards == None:
-        revealed_cards = []
-    else:
+
+    try:
         revealed_cards = json.loads(active_game.revealed_cards)
+    except ValueError:
+        revealed_cards = []
 
     revealed_cards.append(word_set.index(button_text))
     active_game.revealed_cards = json.dumps(revealed_cards)
