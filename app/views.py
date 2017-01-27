@@ -238,6 +238,7 @@ def button(request):
     user = req_dict["user"] #ex: {u'id': u'U3N3Z66TB', u'name': u'dustin'}
     button_value = req_dict['actions'][0]['value']
     button_name = req_dict['actions'][0]['name']
+    print(req_dict)
 
     active_game_in_channel = Game.objects.get(channel_id=channel['id'])
 
@@ -252,9 +253,12 @@ def button(request):
     elif button_name == "map_card":
         payload = {'text': "Good job!", "replace_original": False}
     elif button_name == "card":
-        payload = {'text': button_value, 'replace_original': False}
+        payload = user_select_button_with_text()
 
     return HttpResponse(json.dumps(payload), content_type='application/json')
+
+def user_select_button_with_text():
+    pass
 
 def handle_team_selection(active_game, channel, user, button_value):
     # prevent a player from adding themselves to the game multiple times
