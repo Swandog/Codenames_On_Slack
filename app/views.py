@@ -237,7 +237,6 @@ def button(request):
     print(req_dict['actions'])
     button_value = req_dict['actions'][0]['value']
     button_name = req_dict['actions'][0]['name']
-    button_text = req_dict['actions'][0]['text']
     active_game_in_channel = Game.objects.get(channel_id=channel['id'])
 
     # detect if the user is picking a team
@@ -275,7 +274,7 @@ def user_select_button_with_text(active_game, button_text):
         try:
             revealed_cards.index[idx]
             actions.append({
-                "name": "card",
+                "name": word,
                 "text": "{} {}".format(color_emoji_map[button_color], word),
                 "type": "button",
                 "value": "revealed"
@@ -283,7 +282,7 @@ def user_select_button_with_text(active_game, button_text):
             })
         except ValueError:
             actions.append({
-                "name": "card",
+                "name": word,
                 "text": word,
                 "type": "button",
                 "value": button_color
@@ -366,7 +365,7 @@ def handle_red_spymaster_selection(active_game, channel, user, button_value):
         map_card = json.loads(active_game.map_card)
         for (idx, word) in enumerate(word_set):
             actions.append({
-                "name": "card",
+                "name": word,
                 "text": word,
                 "type": "button",
                 "value": map_card[idx]
