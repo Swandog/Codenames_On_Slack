@@ -78,7 +78,6 @@ def close_teams(request):
     user_name = req_dict['user_name'][0]
     user_id = req_dict['user_id'][0]
     channel_id = req_dict['channel_id'][0]
-    print(req_dict)
 
     if Player.objects.filter(game__channel_id=channel_id).count() < 4:
         return HttpResponse({"text": "There needs to be at least 4 players for a game."}, content_type='application/json')
@@ -417,5 +416,4 @@ def give_hint(request):
                 }
         except:
             payload = {"replace_original": False, "text": "Your hint was improperly formatted."}
-    print(payload)
     return HttpResponse(json.dumps(payload), content_type='application/json')
