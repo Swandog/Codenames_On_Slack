@@ -199,11 +199,11 @@ def show_map_card(request):
             for (idx, color) in enumerate(map_card):
                 btn_style = ""
                 if color == "R":
-                    btn_text = color_emoji_map[map_card[idx]] + word_set[idx]
+                    btn_text = "{} {}".format(color_emoji_map[map_card[idx]], word_set[idx])
                 elif color == "B":
-                    btn_text = color_emoji_map[map_card[idx]] + word_set[idx]
+                    btn_text = "{} {}".format(color_emoji_map[map_card[idx]], word_set[idx])
                 elif color == "X":
-                    btn_text = color_emoji_map[map_card[idx]] + word_set[idx]
+                    btn_text = "{} {}".format(color_emoji_map[map_card[idx]], word_set[idx])
                 else:
                     btn_text = word_set[idx]
                 actions.append({
@@ -252,7 +252,7 @@ def button(request):
     elif button_name == "map_card":
         payload = {'text': "Good job!", "replace_original": False}
     elif button_name == "card":
-        payload = {'text': button_value, 'replace_original': Fla}
+        payload = {'text': button_value, 'replace_original': False}
 
     return HttpResponse(json.dumps(payload), content_type='application/json')
 
@@ -271,7 +271,7 @@ def handle_team_selection(active_game, channel, user, button_value):
                 team_color=button_value,
                 game=active_game
             )
-            payload = {'text': "added <@{}> to the {} team".format(user['name'], button_value), "replace_original": False, "response_type": "in_channel"}
+            payload = {'text': "added <@{}> to the {} team.".format(user['name'], button_value), "replace_original": False, "response_type": "in_channel"}
 
     return payload
 
@@ -331,7 +331,7 @@ def handle_red_spymaster_selection(active_game, channel, user, button_value):
                 }
             )
         payload = {
-            "text": "Here's the board. {} team goes first!".format(active_game.current_team_playing),
+            "text": "Here's the board. *{}* team goes first!".format(active_game.current_team_playing),
             "response_type": "in_channel",
             "attachments": attachments
         }
