@@ -247,7 +247,7 @@ def button(request):
     elif button_name == "red_spymaster":
         payload = handle_red_spymaster_selection(active_game_in_channel, channel, user, button_value)
     elif button_name == "card":
-        payload = user_select_button_with_text(active_game_in_channel, button_name)
+        payload = user_select_button_with_text(active_game_in_channel, button_value)
     else:
         payload = {'text': "Good job!", "replace_original": False}
 
@@ -264,7 +264,8 @@ def user_select_button_with_text(active_game, button_text):
         revealed_cards = []
 
     revealed_cards.append(button_text)
-    active_game.revealed_cards = json.dumps(revealed_cards)
+
+    Game.objects.filter(id=active_game.id).update(revealed_cards=json.dumps(revealed_cards))
     map_card = json.loads(active_game.map_card)
 
     # now build the message
