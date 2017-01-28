@@ -278,7 +278,12 @@ def user_select_button_with_text(active_game, button_text, user_id):
     player_obj = Player.objects.get(game_id=active_game.id, slack_id=user_id)
     if player_obj.is_spymaster == True:
         return {"replace_original": False, "text": "A spymaster can't pick cards."}
-
+    if player_obj.team_color != active_game.current_team_playing:
+        return {"replace_original": False, "text": "Please wait for the {} team to finish their turn.".format(active_game.current_team_playing)}
+    if active_game.num_guesses_left == 0:
+        return {"replace_original": False, "text": "Your spymaster, <@{}>, needs to give a hint first".format(
+            Player.objects.filter(game_id=active_game.id, is_spymaster=True, team_color=active_game.current_team_playing)
+        )}
 
     word_set = json.loads(active_game.word_set)
     revealed_cards = active_game.revealed_cards
@@ -289,13 +294,16 @@ def user_select_button_with_text(active_game, button_text, user_id):
         revealed_cards = []
 
     revealed_cards.append(button_text)
-
     Game.objects.filter(id=active_game.id).update(revealed_cards=json.dumps(revealed_cards))
-    map_card = json.loads(active_game.map_card)
+    # reveal the updated board game state
+    payload = generate_current_board_state(active_game, revealed_cards)
+    return payload
 
-    # now build the message
+def generate_current_board_state(active_game, revealed_cards):
     attachments = []
     actions = []
+    word_set = json.loads(active_game.word_set)
+    map_card = json.loads(active_game.map_card)
     for (idx, word) in enumerate(word_set):
         button_color = map_card[idx]
         if word in revealed_cards:
@@ -327,7 +335,6 @@ def user_select_button_with_text(active_game, button_text, user_id):
         "response_type": "in_channel",
         "attachments": attachments,
     }
-
     return payload
 
 def handle_team_selection(active_game, channel, user, button_value):
@@ -431,10 +438,11 @@ def give_hint(request):
             hint = req_dict['text'][0]
             formatted_hint = hint.split(",")
             word = formatted_hint[0]
-            num_guesses = int(formatted_hint[1])
-
+            num_guesses = abs(int(formatted_hint[1]))
+            current_game.num_guesses_left = num_guesses
+            current_game.save()
             payload =  {
-                    "text": "<@{}>'s hint: *'{}'*, *{}*".format(user_id, word.strip().upper(), num_guesses),
+                    "text": "> <@{}>'s hint: *'{}'*, *{}*".format(user_id, word.strip().upper(), num_guesses),
                     "response_type": "in_channel",
                 }
         except:
