@@ -401,7 +401,7 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
             current_team_emoji = ":large_blue_circle:"
 
         payload = {
-            "text": ">Here's the updated board! \n >Current Team Playing: {}, Guesses left: *{}*".format(current_team_emoji, active_game.num_guesses_left - 1),
+            "text": ">>>Here's the updated board! \n Current Team Playing: {}, Guesses left: *{}*".format(current_team_emoji, active_game.num_guesses_left - 1),
             "response_type": "in_channel",
             "attachments": attachments,
         }
