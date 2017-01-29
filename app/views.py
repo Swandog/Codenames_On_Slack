@@ -251,6 +251,8 @@ def show_map_card(request):
 def button(request):
     # parse the request to a dict
     req_dict = json.loads(urlparse.parse_qs(urllib.unquote(request.body))['payload'][0])
+    print("REQ DICT: {}".format(req_dict))
+    print("request body: {}".format(request.body))
     actions = req_dict["actions"] #ex: [{u'name': u'chess', u'value': u'chess'}]
     callback_id = req_dict["callback_id"] #ex: wopr_game
     channel = req_dict["channel"] #ex: {u'id': u'C3NUEG0S0', u'name': u'game'}
