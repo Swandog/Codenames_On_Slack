@@ -332,9 +332,18 @@ def generate_current_board_state(active_game, revealed_cards):
         )
 
     # remind the players of the teams
+    players_in_game = Player.objects.filter(game_id=active_game.id)
+    red_spymaster = players_in_game.get(is_spymaster=True, team_color='red')
+    red_players = players_in_game.filter(is_spymaster=False, team_color='red')
+    blue_spymaster = players_in_game.get(is_spymaster=True,team_color='blue')
+    blue_players = players_in_game.filter(is_spymaster=False, team_color='blue')
+
+    red_team = "*<@{}>*, ".format(red_spymaster.slack_id) + ["<@{}>".format(player.slack_id) for player in red_players].join(' ')
+    blue_team = "*<@{}>*, ".format(blue_spymaster.slack_id) + ["<@{}>".format(player.slack_id) for player in blue_players].join(' ')
+
     attachments.append({
-        "title": "As a reminder, here are the teams",
-        "text": "Players go here"
+        "title": "As a reminder, here are the teams:",
+        "text": "{} \n {}".format(red_team, blue_team)
     })
 
     payload = {
