@@ -382,13 +382,28 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
             "attachments": attachments,
         }
     else:
+        # remind the players of the teams
+        players_in_game = Player.objects.filter(game_id=active_game.id)
+        red_spymaster = players_in_game.get(is_spymaster=True, team_color='red')
+        red_players = players_in_game.filter(is_spymaster=False, team_color='red')
+        blue_spymaster = players_in_game.get(is_spymaster=True,team_color='blue')
+        blue_players = players_in_game.filter(is_spymaster=False, team_color='blue')
+
+        red_team = "<@{}>(:sunglasses:), ".format(red_spymaster.slack_id) + ', '.join(["<@{}>".format(player.slack_id) for player in red_players])
+        blue_team = "<@{}>(:sunglasses:), ".format(blue_spymaster.slack_id) + ', '.join(["<@{}>".format(player.slack_id) for player in blue_players])
+
+        attachments.append({
+            "title": "As a reminder, here are the teams:",
+            "text": ":red_circle:{} \n :large_blue_circle:{}".format(red_team, blue_team)
+        })
+
         if active_game.current_team_playing == "red":
             current_team_emoji = ":red_circle:"
         else:
             current_team_emoji = ":large_blue_circle:"
 
         payload = {
-            "text": ">>>Here's the updated board! \n Current Team Playing: {}, Guesses left: *{}*".format(current_team_emoji, active_game.num_guesses_left - 1),
+            "text": "Here's the updated board! \n Current Team Playing: {}, Guesses left: *{}*".format(current_team_emoji, active_game.num_guesses_left - 1),
             "response_type": "in_channel",
             "attachments": attachments,
         }
