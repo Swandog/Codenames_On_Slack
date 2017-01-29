@@ -338,12 +338,12 @@ def generate_current_board_state(active_game, revealed_cards):
     blue_spymaster = players_in_game.get(is_spymaster=True,team_color='blue')
     blue_players = players_in_game.filter(is_spymaster=False, team_color='blue')
 
-    red_team = "*<@{}>*, ".format(red_spymaster.slack_id) + ' '.join(["<@{}>".format(player.slack_id) for player in red_players])
-    blue_team = "*<@{}>*, ".format(blue_spymaster.slack_id) + ' '.join(["<@{}>".format(player.slack_id) for player in blue_players])
+    red_team = "<@{}>(spymaster) ".format(red_spymaster.slack_id) + ' '.join(["<@{}>".format(player.slack_id) for player in red_players])
+    blue_team = "<@{}>(spymaster)".format(blue_spymaster.slack_id) + ' '.join(["<@{}>".format(player.slack_id) for player in blue_players])
 
     attachments.append({
         "title": "As a reminder, here are the teams:",
-        "text": "{} \n {}".format(red_team, blue_team)
+        "text": ":red_circle:*Red Team*: {} \n :large_blue_circle:*Blue Team*:{}".format(red_team, blue_team)
     })
 
     payload = {
