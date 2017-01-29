@@ -396,9 +396,9 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
         })
 
         if active_game.current_team_playing == "red":
-            current_team_emoji = :red_circle:
+            current_team_emoji = ":red_circle:"
         else:
-            current_team_emoji = :blue_circle:
+            current_team_emoji = ":blue_circle:"
 
         payload = {
             "text": "Here's the updated board! \n Current Team Playing: {}".format(current_team_emoji),
