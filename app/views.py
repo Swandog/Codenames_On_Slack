@@ -250,7 +250,7 @@ def show_map_card(request):
 
 def button(request):
     # parse the request to a dict
-    print("request body: {}".format(request.body))
+    print("request body: {}".format(urllib.unquote(request.body)))
     req_dict = json.loads(urlparse.parse_qs(urllib.unquote(request.body))['payload'][0])
     print("REQ DICT: {}".format(req_dict))
     actions = req_dict["actions"] #ex: [{u'name': u'chess', u'value': u'chess'}]
