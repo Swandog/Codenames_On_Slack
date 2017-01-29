@@ -335,6 +335,7 @@ def generate_current_board_state(active_game, revealed_cards):
         "response_type": "in_channel",
         "attachments": attachments,
     }
+    # remind the players of the teams
     return payload
 
 def handle_team_selection(active_game, channel, user, button_value):
