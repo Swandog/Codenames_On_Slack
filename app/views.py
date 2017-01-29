@@ -338,16 +338,21 @@ def generate_current_board_state(active_game, revealed_cards):
     blue_spymaster = players_in_game.get(is_spymaster=True,team_color='blue')
     blue_players = players_in_game.filter(is_spymaster=False, team_color='blue')
 
-    red_team = "<@{}>(spymaster) ".format(red_spymaster.slack_id) + ' '.join(["<@{}>".format(player.slack_id) for player in red_players])
-    blue_team = "<@{}>(spymaster)".format(blue_spymaster.slack_id) + ' '.join(["<@{}>".format(player.slack_id) for player in blue_players])
+    red_team = "<@{}>(:sunglasses:), ".format(red_spymaster.slack_id) + ', '.join(["<@{}>".format(player.slack_id) for player in red_players])
+    blue_team = "<@{}>(:sunglasses:), ".format(blue_spymaster.slack_id) + ', '.join(["<@{}>".format(player.slack_id) for player in blue_players])
 
     attachments.append({
         "title": "As a reminder, here are the teams:",
-        "text": ":red_circle:*Red Team*: {} \n :large_blue_circle:*Blue Team*:{}".format(red_team, blue_team)
+        "text": ":red_circle:: {} \n :large_blue_circle:{}".format(red_team, blue_team)
     })
 
+    if active_game.current_team_playing == "red":
+        current_team_emoji = :red_circle:
+    else:
+        current_team_emoji = :blue_circle:
+
     payload = {
-        "text": "Here's the updated board!",
+        "text": "Here's the updated board! \n Current Team Playing: {}".format(current_team_emoji),
         "response_type": "in_channel",
         "attachments": attachments,
     }
