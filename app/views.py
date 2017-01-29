@@ -286,7 +286,17 @@ def user_select_button_with_text(active_game, button_text, user_id):
         )}
 
     word_set = json.loads(active_game.word_set)
+    map_card = json.loads(active_game.map_card)
     revealed_cards = active_game.revealed_cards
+    winning_team = None
+
+    map_card_to_team_color = {
+        "R": "red",
+        "B": "blue",
+        "": "white",
+        "X": "assassin"
+    }
+    selected_word_team_color = map_card_to_team_color[map_card[word_set.index(button_text)]]
 
     try:
         revealed_cards = json.loads(active_game.revealed_cards)
@@ -295,11 +305,43 @@ def user_select_button_with_text(active_game, button_text, user_id):
 
     revealed_cards.append(button_text)
     Game.objects.filter(id=active_game.id).update(revealed_cards=json.dumps(revealed_cards))
-    # reveal the updated board game state
-    payload = generate_current_board_state(active_game, revealed_cards)
+
+    ''' There are now three types of reponses a valid user can anticipate after clicking a button '''
+    # 1) if the player picked the assassin it's an auto-lose for their team
+    if selected_word_team_color == "assassin":
+        #show the entire board + dialog that the game is over
+        active_game.revealed_cards = active_game.word_set
+        active_game.save()
+        revealed_cards = json.loads(active_game.revealed_cards)
+        if active_game.current_team == "red":
+            winning_team = "blue"
+        else:
+            winning_team = "red"
+    # 2) the player picked correctly
+    if player_obj.team_color == selected_word_team_color:
+        active_game.num_guesses_left = active_game.num_guesses_left - 1
+        active_game.save()
+        if active_game.num_guesses_left == 0:
+            # switch the teams if the num_guesses went to 0
+            if active_game.current_team_playing == "blue":
+                active_game.current_team_playing = "red"
+            else:
+                active_game.current_team_playing = "blue"
+            active_game.save()
+
+    # 3) the player picked incorrectly (the other team's color or a neutral card)
+    if player_obj.team_color != selected_word_team_color:
+        active_game.num_guesses_left = 0
+        if active_game.current_team_playing == "blue":
+            active_game.current_team_playing = "red"
+        else:
+            active_game.current_team_playing = "blue"
+        active_game.save()
+
+    payload = generate_current_board_state(active_game, revealed_cards, winning_team)
     return payload
 
-def generate_current_board_state(active_game, revealed_cards):
+def generate_current_board_state(active_game, revealed_cards, winning_team=None):
     attachments = []
     actions = []
     word_set = json.loads(active_game.word_set)
@@ -331,31 +373,38 @@ def generate_current_board_state(active_game, revealed_cards):
             }
         )
 
-    # remind the players of the teams
-    players_in_game = Player.objects.filter(game_id=active_game.id)
-    red_spymaster = players_in_game.get(is_spymaster=True, team_color='red')
-    red_players = players_in_game.filter(is_spymaster=False, team_color='red')
-    blue_spymaster = players_in_game.get(is_spymaster=True,team_color='blue')
-    blue_players = players_in_game.filter(is_spymaster=False, team_color='blue')
-
-    red_team = "<@{}>(:sunglasses:), ".format(red_spymaster.slack_id) + ', '.join(["<@{}>".format(player.slack_id) for player in red_players])
-    blue_team = "<@{}>(:sunglasses:), ".format(blue_spymaster.slack_id) + ', '.join(["<@{}>".format(player.slack_id) for player in blue_players])
-
-    attachments.append({
-        "title": "As a reminder, here are the teams:",
-        "text": ":red_circle:: {} \n :large_blue_circle:{}".format(red_team, blue_team)
-    })
-
-    if active_game.current_team_playing == "red":
-        current_team_emoji = :red_circle:
+    if winning_team:
+        payload = {
+            "title": "Game Over",
+            "text": "The {} team won!".format(winning_team.upper()),
+            "attachments": attachments,
+        }
     else:
-        current_team_emoji = :blue_circle:
+        # remind the players of the teams
+        players_in_game = Player.objects.filter(game_id=active_game.id)
+        red_spymaster = players_in_game.get(is_spymaster=True, team_color='red')
+        red_players = players_in_game.filter(is_spymaster=False, team_color='red')
+        blue_spymaster = players_in_game.get(is_spymaster=True,team_color='blue')
+        blue_players = players_in_game.filter(is_spymaster=False, team_color='blue')
 
-    payload = {
-        "text": "Here's the updated board! \n Current Team Playing: {}".format(current_team_emoji),
-        "response_type": "in_channel",
-        "attachments": attachments,
-    }
+        red_team = "<@{}>(:sunglasses:), ".format(red_spymaster.slack_id) + ', '.join(["<@{}>".format(player.slack_id) for player in red_players])
+        blue_team = "<@{}>(:sunglasses:), ".format(blue_spymaster.slack_id) + ', '.join(["<@{}>".format(player.slack_id) for player in blue_players])
+
+        attachments.append({
+            "title": "As a reminder, here are the teams:",
+            "text": ":red_circle:: {} \n :large_blue_circle:{}".format(red_team, blue_team)
+        })
+
+        if active_game.current_team_playing == "red":
+            current_team_emoji = :red_circle:
+        else:
+            current_team_emoji = :blue_circle:
+
+        payload = {
+            "text": "Here's the updated board! \n Current Team Playing: {}".format(current_team_emoji),
+            "response_type": "in_channel",
+            "attachments": attachments,
+        }
     return payload
 
 def handle_team_selection(active_game, channel, user, button_value):
@@ -460,7 +509,8 @@ def give_hint(request):
             formatted_hint = hint.split(",")
             word = formatted_hint[0]
             num_guesses = abs(int(formatted_hint[1]))
-            current_game.num_guesses_left = num_guesses
+            # weird rule where users can select 1 more than the specified num guesses
+            current_game.num_guesses_left = num_guesses + 1
             current_game.save()
             payload =  {
                     "text": "> <@{}>'s hint: *'{}'*, *{}*".format(user_id, word.strip().upper(), num_guesses),
