@@ -392,16 +392,16 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
 
         attachments.append({
             "title": "As a reminder, here are the teams:",
-            "text": ":red_circle:: {} \n :large_blue_circle:{}".format(red_team, blue_team)
+            "text": ":red_circle:{} \n :large_blue_circle:{}".format(red_team, blue_team)
         })
 
         if active_game.current_team_playing == "red":
             current_team_emoji = ":red_circle:"
         else:
-            current_team_emoji = ":blue_circle:"
+            current_team_emoji = ":large_blue_circle:"
 
         payload = {
-            "text": "Here's the updated board! \n Current Team Playing: {}".format(current_team_emoji),
+            "text": ">Here's the updated board! \n >Current Team Playing: {}, Guesses left: *{}*".format(current_team_emoji, active_game.num_guesses_left - 1),
             "response_type": "in_channel",
             "attachments": attachments,
         }
