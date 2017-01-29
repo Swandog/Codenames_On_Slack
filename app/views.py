@@ -282,7 +282,7 @@ def user_select_button_with_text(active_game, button_text, user_id):
         return {"replace_original": False, "text": "Please wait for the {} team to finish their turn.".format(active_game.current_team_playing)}
     if active_game.num_guesses_left == 0:
         return {"replace_original": False, "text": "Your spymaster, <@{}>, needs to give a hint first".format(
-            Player.objects.filter(game_id=active_game.id, is_spymaster=True, team_color=active_game.current_team_playing)
+            Player.objects.filter(game_id=active_game.id, is_spymaster=True, team_color=active_game.current_team_playing).slack_id
         )}
 
     word_set = json.loads(active_game.word_set)
@@ -330,12 +330,18 @@ def generate_current_board_state(active_game, revealed_cards):
                 "actions": actions[(x-1)*5:x*5]
             }
         )
+
+    # remind the players of the teams
+    attachments.append({
+        "title": "As a reminder, here are the teams",
+        "text": "Players go here"
+    })
+
     payload = {
         "text": "Here's the updated board!",
         "response_type": "in_channel",
         "attachments": attachments,
     }
-    # remind the players of the teams
     return payload
 
 def handle_team_selection(active_game, channel, user, button_value):
