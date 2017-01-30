@@ -390,7 +390,7 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
         "actions": {
             "name": "end",
             "text": "End Turn",
-            "style": "Danger",
+            "style": "danger",
             "type": "button",
             "value": "end"
         }
