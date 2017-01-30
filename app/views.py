@@ -492,7 +492,7 @@ def get_emoji_from_current_team_playing(active_game):
         return ":large_blue_circle:"
 
 def did_team_win_game(active_game):
-    game = Game.objects.filter(id=active_game.id)
+    game = Game.objects.get(id=active_game.id)
     if game.current_team_playing == "red":
         card_color = "R"
     else:
