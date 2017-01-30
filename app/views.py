@@ -387,13 +387,13 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
         "fallback": "error ending turn",
         "callback_id":  "turn_ended",
         "attachment_type": "default",
-        "actions": {
+        "actions": [{
             "name": "end",
             "text": "End Turn",
             "style": "danger",
             "type": "button",
             "value": "end"
-        }
+        }]
     })
     print(attachments)
     if winning_team:
