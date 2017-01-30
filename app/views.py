@@ -503,7 +503,7 @@ def did_team_win_game(active_game):
     target_cards = 0
     for card in map_card:
         if card == card_color:
-            target_win += 1
+            target_cards += 1
 
     actual_revealed_cards = 0
     for (idx, revealed_word) in enumerate(json.loads(game.revealed_cards)):
