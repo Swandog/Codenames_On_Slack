@@ -377,20 +377,23 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
             })
 
     for x in range (1, 6):
-        attachments.append(
-            {
+        attachments.append({
                 "fallback": "error picking card",
                 "callback_id": "card_chosen",
                 "attachment_type": "default",
                 "actions": actions[(x-1)*5:x*5]
-            }
-        )
+            })
     attachments.append({
-        "name": "end",
-        "text": "End Turn",
-        "style": "Danger",
-        "type": "button",
-        "value": "end"
+        "fallback": "error ending turn",
+        "callback_id":  "turn_ended",
+        "attachment_type": "default",
+        "actions": {
+            "name": "end",
+            "text": "End Turn",
+            "style": "Danger",
+            "type": "button",
+            "value": "end"
+        }
     })
 
     if winning_team:
