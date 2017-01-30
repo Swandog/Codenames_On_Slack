@@ -345,7 +345,6 @@ def user_select_button_with_text(active_game, button_text, user_id):
     return payload
 
 def generate_current_board_state(active_game, revealed_cards, winning_team=None):
-    print("revealed cards 2: {}".format(revealed_cards))
     attachments = []
     actions = []
     word_set = json.loads(active_game.word_set)
@@ -401,8 +400,6 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
             "text": ":red_circle:{} \n :large_blue_circle:{}".format(red_team, blue_team)
         })
 
-        current_team_emoji = get_emoji_from_current_team_playing(active_game)
-
         if active_game.num_guesses_left == 0:
             # ask the team's spymaster to specify a hint
             guess_message = "<@{}>, use */give_hint `word`, `num_guesses`* to give your team a hint.".format(
@@ -410,6 +407,7 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
             )
         else:
             guess_message = "Guesses: *{}*".format(active_game.num_guesses_left)
+        current_team_emoji = get_emoji_from_current_team_playing(active_game)
         payload = {
             "text": "Here's the board! \n Current Team Playing: {}. {}".format(current_team_emoji, guess_message),
             "response_type": "in_channel",
@@ -476,7 +474,8 @@ def handle_red_spymaster_selection(active_game, channel, user, button_value):
     return payload
 
 def get_emoji_from_current_team_playing(active_game):
-    if active_game.current_team_playing == "red":
+    game = Game.objects.get(id=active_game.id)
+    if game.current_team_playing == "red":
         return ":red_circle:"
     else:
         return ":large_blue_circle:"
