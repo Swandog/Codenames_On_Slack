@@ -322,14 +322,12 @@ def user_select_button_with_text(active_game, button_text, user_id):
     # 2) the player picked correctly
     if player_obj.team_color == selected_word_team_color:
         active_game.num_guesses_left = active_game.num_guesses_left - 1
-        active_game.save()
         if active_game.num_guesses_left == 0:
             # switch the teams if the num_guesses went to 0
             if active_game.current_team_playing == "blue":
                 active_game.current_team_playing = "red"
             else:
                 active_game.current_team_playing = "blue"
-            active_game.save()
 
     # 3) the player picked incorrectly (the other team's color or a neutral card)
     if player_obj.team_color != selected_word_team_color:
