@@ -496,7 +496,7 @@ def give_hint(request):
             num_guesses = abs(int(formatted_hint[1]))
             # weird rule where users can select 1 more than the specified num guesses
             current_game.num_guesses_left = num_guesses + 1
-            current_game.save()
+            print("NUM GUESSES LEFT: {}".format(current_game.num_guesses_left))
             payload =  {
                     "text": "> <@{}>'s hint: *'{}'*, *{}*".format(user_id, word.strip().upper(), num_guesses),
                     "response_type": "in_channel",
