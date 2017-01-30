@@ -266,6 +266,8 @@ def button(request):
         payload = handle_red_spymaster_selection(active_game_in_channel, channel, user, button_value)
     elif button_name == "card":
         payload = user_select_button_with_text(active_game_in_channel, button_value, user['id'])
+    elif button_name == "end":
+        payload = user_did_end_turn(active_game_in_channel, user['id'])
     else:
         payload = {'text': "Good job!", "replace_original": False}
 
@@ -483,6 +485,30 @@ def handle_blue_spymaster_selection(active_game, channel, user, button_value):
                 ]
             }
     return payload
+
+def user_did_end_turn(active_game, user_id):
+    # enforce the user who clicked this must be a spymaster of the current team
+    player = Player.objects.get(slack_id=user_id)
+    active_game_filter = Game.objects.filter(id=active_game.id)
+
+    if active_game.current_team_playing != player.team_color:
+        payload = {"replace_original": False, "text": "You can't end another team's turn"}
+    elif player.is_spymaster = True:
+        payload = {"replace_original": False, "text": "A spymaster can't end their team's turn."}
+    else:
+        active_game.num_guesses_left = 0
+        active_game_filter.update(num_guesses_left=0)
+        if active_game.current_team_playing == "blue":
+            active_game.current_team="red"
+            active_game_filter.update(current_team_playing="red")
+        else:
+            active_game.current_team="blue"
+            active_game_filter.update(current_team_playing="blue")
+        payload = generate_current_board_state(active_game, active_game.revealed_cards)
+
+    return HttpResponse(json.dumps(payload), content_type='application/json')
+
+
 
 def handle_red_spymaster_selection(active_game, channel, user, button_value):
     if active_game.game_master != user['id']:
