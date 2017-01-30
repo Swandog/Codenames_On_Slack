@@ -314,7 +314,7 @@ def user_select_button_with_text(active_game, button_text, user_id):
         active_game.revealed_cards = active_game.word_set
         active_game.save()
         revealed_cards = json.loads(active_game.revealed_cards)
-        if active_game.current_team == "red":
+        if active_game.current_team_playing == "red":
             winning_team = "blue"
         else:
             winning_team = "red"
