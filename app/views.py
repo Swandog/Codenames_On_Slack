@@ -327,9 +327,9 @@ def user_select_button_with_text(active_game, button_text, user_id):
                 active_game.revealed_cards = active_game.word_set
                 revealed_cards = json.loads(active_game.revealed_cards)
                 if active_game.current_team_playing == "red":
-                    winning_team = "blue"
-                else:
                     winning_team = "red"
+                else:
+                    winning_team = "blue"
             # switch the teams if the num_guesses went to 0
             elif active_game.current_team_playing == "blue":
                 active_game.current_team = "red"
@@ -415,7 +415,7 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
                 Player.objects.get(is_spymaster=True, team_color=active_game.current_team_playing).slack_id
             )
         else:
-            guess_message = "Guesses: *{}*".format(active_game.num_guesses_left)
+            guess_message = "Guesses: *{}* _(+1)_".format(active_game.num_guesses_left - 1)
         current_team_emoji = get_emoji_from_current_team_playing(active_game)
         payload = {
             "text": "Here's the board! \n Current Team Playing: {}. {}".format(current_team_emoji, guess_message),
@@ -509,6 +509,8 @@ def did_team_win_game(active_game):
         if map_card[idx_of_card] == card_color:
             actual_revealed_cards += 1
 
+    print(target_cards)
+    print(actual_revealed_cards)
     return target_cards == actual_revealed_cards
 
 def give_hint(request):
