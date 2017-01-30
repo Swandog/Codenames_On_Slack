@@ -306,6 +306,7 @@ def user_select_button_with_text(active_game, button_text, user_id):
 
     revealed_cards.append(button_text)
     Game.objects.filter(id=active_game.id).update(revealed_cards=json.dumps(revealed_cards))
+    print("revealed cards 1: {}".format(revealed_cards))
 
     ''' There are now three types of reponses a valid user can anticipate after clicking a button '''
     # 1) if the player picked the assassin it's an auto-lose for their team
@@ -343,6 +344,7 @@ def user_select_button_with_text(active_game, button_text, user_id):
     return payload
 
 def generate_current_board_state(active_game, revealed_cards, winning_team=None):
+    print("revealed cards 2: {}".format(revealed_cards))
     attachments = []
     actions = []
     word_set = json.loads(active_game.word_set)
