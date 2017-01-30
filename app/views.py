@@ -395,7 +395,7 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
             "value": "end"
         }
     })
-
+    print(attachments)
     if winning_team:
         payload = {
             "title": "Game Over",
