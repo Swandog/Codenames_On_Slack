@@ -279,7 +279,7 @@ def user_select_button_with_text(active_game, button_text, user_id):
     if player_obj.is_spymaster == True:
         return {"replace_original": False, "text": "A spymaster can't pick cards."}
     if player_obj.team_color != active_game.current_team_playing:
-        return {"replace_original": False, "text": "Please wait for the {} team to finish their turn.".format(active_game.current_team_playing)}
+        return {"replace_original": False, "text": "Please wait for the *{}* team to finish their turn.".format(active_game.current_team_playing)}
     if active_game.num_guesses_left == 0:
         return {"replace_original": False, "text": "Your spymaster, <@{}>, needs to give a hint first".format(
             Player.objects.get(game_id=active_game.id, is_spymaster=True, team_color=active_game.current_team_playing).slack_id
@@ -373,9 +373,11 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
     if winning_team:
         payload = {
             "title": "Game Over",
-            "text": "The {} team won!".format(winning_team.upper()),
+            "text": "The *{}* team won!".format(winning_team),
             "attachments": attachments,
         }
+        Player.objects.filter(game_id=active_game.id).delete()
+        active_game.delete()
     else:
         # remind the players of the teams
         players_in_game = Player.objects.filter(game_id=active_game.id)
@@ -391,6 +393,8 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
             "title": "As a reminder, here are the teams:",
             "text": ":red_circle:{} \n :large_blue_circle:{}".format(red_team, blue_team)
         })
+
+        current_team_emoji = get_emoji_from_current_team_playing(active_game)
 
         if active_game.current_team_playing == "red":
             current_team_emoji = ":red_circle:"
@@ -478,13 +482,23 @@ def handle_red_spymaster_selection(active_game, channel, user, button_value):
                     "actions": actions[(x-1)*5:x*5]
                 }
             )
+
         payload = {
-            "text": "Here's the board. *{}* team goes first!".format(active_game.current_team_playing),
+            "text": "Here's the board. \n Current Team Playing: {}, Guesses left: *{}*".format(
+                get_emoji_from_current_team_playing(active_game),
+                active_game.num_guesses_left
+            ),
             "response_type": "in_channel",
             "attachments": attachments
         }
 
     return payload
+
+def get_emoji_from_current_team_playing(active_game):
+    if active_game.current_team_playing == "red":
+        return ":red_circle:"
+    else:
+        return ":large_blue_circle:"
 
 def give_hint(request):
     req_dict = urlparse.parse_qs(urllib.unquote(request.body))
