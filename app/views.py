@@ -375,13 +375,7 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
                 "type": "button",
                 "value": word
             })
-    actions.append({
-        "name": "end",
-        "text": "End Turn",
-        "style": "Danger",
-        "type": "button",
-        "value": "end"
-    })
+
     for x in range (1, 6):
         attachments.append(
             {
@@ -391,6 +385,13 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
                 "actions": actions[(x-1)*5:x*5]
             }
         )
+    attachments.append({
+        "name": "end",
+        "text": "End Turn",
+        "style": "Danger",
+        "type": "button",
+        "value": "end"
+    })
 
     if winning_team:
         payload = {
