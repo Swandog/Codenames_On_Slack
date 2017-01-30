@@ -333,7 +333,7 @@ def user_select_button_with_text(active_game, button_text, user_id):
 
         if active_game.num_guesses_left == 0:
             # switch the teams if the num_guesses went to 0
-            elif active_game.current_team_playing == "blue":
+            if active_game.current_team_playing == "blue":
                 active_game.current_team = "red"
                 active_game_filter.update(current_team_playing="red")
             else:
