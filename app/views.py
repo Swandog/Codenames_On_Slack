@@ -318,7 +318,7 @@ def user_select_button_with_text(active_game, button_text, user_id):
             winning_team = "red"
     # 2) the player picked correctly
     if player_obj.team_color == selected_word_team_color:
-        Game.objects.filter(id=active_game.id).update(num_guesses_left = active_game.num_guesses_left - 1)
+        active_game.num_guesses_left = active_game.num_guesses_left - 1
         if active_game.num_guesses_left == 0:
             # switch the teams if the num_guesses went to 0
             if active_game.current_team_playing == "blue":
@@ -334,6 +334,7 @@ def user_select_button_with_text(active_game, button_text, user_id):
         else:
             active_game.current_team_playing = "blue"
 
+    active_game.save()
     payload = generate_current_board_state(active_game, revealed_cards, winning_team)
     return payload
 
