@@ -232,15 +232,13 @@ def show_map_card(request):
                     "value": "map_card",
                 })
             for x in range(1,6):
-                attachments.append(
-                    {
+                attachments.append({
                         "fallback": "error displaying mapcard",
                         "callback_id": "red map_card shown",
                         "color": "#3AA3E3",
                         "attachment_type": "default",
                         "actions": actions[(x-1)*5:x*5]
-                    }
-                )
+                    })
             payload = {
                 "text": "Here's the map card!",
                 "attachments": attachments
@@ -377,6 +375,13 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
                 "type": "button",
                 "value": word
             })
+    actions.append({
+        "name": "end",
+        "text": "End Turn",
+        "style": "Danger",
+        "type": "button",
+        "value": "end"
+    })
     for x in range (1, 6):
         attachments.append(
             {
@@ -410,6 +415,7 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
             "title": "As a reminder, here are the teams:",
             "text": ":red_circle:{} \n :large_blue_circle:{}".format(red_team, blue_team)
         })
+
 
         if active_game.num_guesses_left == 0:
             # ask the team's spymaster to specify a hint
