@@ -404,7 +404,7 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
         else:
             guess_message = "Guesses: *{}*".format(get_emoji_from_current_team_playing(active_game))
         payload = {
-            "text": "Here's the updated board! \n Current Team Playing: {}, {}".format(current_team_emoji, guess_message),
+            "text": "Here's the board! \n Current Team Playing: {}, {}".format(current_team_emoji, guess_message),
             "response_type": "in_channel",
             "attachments": attachments,
         }
@@ -464,35 +464,7 @@ def handle_red_spymaster_selection(active_game, channel, user, button_value):
     else:
         Player.objects.filter(game__channel_id=channel['id'], slack_id=button_value).update(is_spymaster=True)
         # teams and spymasters have been chosen, show the board
-        actions = []
-        attachments = []
-        word_set = json.loads(active_game.word_set)
-        map_card = json.loads(active_game.map_card)
-        for (idx, word) in enumerate(word_set):
-            actions.append({
-                "name": "card",
-                "text": word,
-                "type": "button",
-                "value": word
-            })
-        for x in range(1, 6):
-            attachments.append(
-                {
-                    "fallback": "error picking card",
-                    "callback_id": "card_chosen",
-                    "attachment_type": "default",
-                    "actions": actions[(x-1)*5:x*5]
-                }
-            )
-
-        payload = {
-            "text": "Here's the board. \n Current Team Playing: {}, Guesses left: *{}*".format(
-                get_emoji_from_current_team_playing(active_game),
-                active_game.num_guesses_left
-            ),
-            "response_type": "in_channel",
-            "attachments": attachments
-        }
+        payload = generate_current_board_state(active_game, [])
 
     return payload
 
