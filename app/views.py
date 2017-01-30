@@ -398,13 +398,13 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
 
         if active_game.num_guesses_left == 0:
             # ask the team's spymaster to specify a hint
-            guess_message = "<@{}>, use _/give_hint `word`, `num_guesses`_ to give your team a hint.".format(
+            guess_message = "<@{}>, use */give_hint `word`, `num_guesses`* to give your team a hint.".format(
                 Player.objects.get(is_spymaster=True, team_color=active_game.current_team_playing).slack_id
             )
         else:
             guess_message = "Guesses: *{}*".format(get_emoji_from_current_team_playing(active_game))
         payload = {
-            "text": "Here's the board! \n Current Team Playing: {}, {}".format(current_team_emoji, guess_message),
+            "text": "Here's the board! \n Current Team Playing: {}. {}".format(current_team_emoji, guess_message),
             "response_type": "in_channel",
             "attachments": attachments,
         }
@@ -496,6 +496,7 @@ def give_hint(request):
             num_guesses = abs(int(formatted_hint[1]))
             # weird rule where users can select 1 more than the specified num guesses
             current_game.num_guesses_left = num_guesses + 1
+            current_game.save()
             payload =  {
                     "text": "> <@{}>'s hint: *'{}'*, *{}*".format(user_id, word.strip().upper(), num_guesses),
                     "response_type": "in_channel",
