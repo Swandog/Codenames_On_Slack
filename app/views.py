@@ -345,6 +345,7 @@ def user_select_button_with_text(active_game, button_text, user_id):
     return payload
 
 def generate_current_board_state(active_game, revealed_cards, winning_team=None):
+    active_game = Game.objects.get(id=active_game.id)
     attachments = []
     actions = []
     word_set = json.loads(active_game.word_set)
