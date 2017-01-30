@@ -322,8 +322,16 @@ def user_select_button_with_text(active_game, button_text, user_id):
         active_game_filter.update(num_guesses_left = active_game.num_guesses_left - 1)
         active_game.num_guesses_left -= 1
         if active_game.num_guesses_left == 0:
+            # if the team hit their total num cards, they won
+            if did_team_win_game(active_game):
+                active_game.revealed_cards = active_game.word_set
+                revealed_cards = json.loads(active_game.revealed_cards)
+                if active_game.current_team_playing == "red":
+                    winning_team = "blue"
+                else:
+                    winning_team = "red"
             # switch the teams if the num_guesses went to 0
-            if active_game.current_team_playing == "blue":
+            elif active_game.current_team_playing == "blue":
                 active_game.current_team = "red"
                 active_game_filter.update(current_team_playing="red")
             else:
@@ -480,6 +488,28 @@ def get_emoji_from_current_team_playing(active_game):
         return ":red_circle:"
     else:
         return ":large_blue_circle:"
+
+def did_team_win_game(active_game):
+    game = Game.objects.filter(id=active_game.id)
+    if game.current_team_playing == "red":
+        card_color = "R"
+    else:
+        card_color = "B"
+
+    map_card = json.loads(game.map_card)
+    word_set = json.loads(game.word_set)
+    target_cards = 0
+    for card in map_card:
+        if card == card_color:
+            target_win += 1
+
+    actual_revealed_cards = 0
+    for (idx, revealed_word) in enumerate(json.loads(game.revealed_cards)):
+        idx_of_card = word_set.index(revealed_word)
+        if map_card[idx_of_card] == card_color:
+            actual_revealed_cards += 1
+
+    return target_cards == actual_revealed_cards
 
 def give_hint(request):
     req_dict = urlparse.parse_qs(urllib.unquote(request.body))
