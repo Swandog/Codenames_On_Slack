@@ -250,9 +250,7 @@ def show_map_card(request):
 
 def button(request):
     # parse the request to a dict
-    print("request body: {}".format(urlparse.parse_qs(urllib.unquote(request.body))['payload'][0]))
     req_dict = json.loads(urlparse.parse_qs(urllib.unquote(request.body))['payload'][0])
-    print("REQ DICT: {}".format(req_dict))
     actions = req_dict["actions"] #ex: [{u'name': u'chess', u'value': u'chess'}]
     callback_id = req_dict["callback_id"] #ex: wopr_game
     channel = req_dict["channel"] #ex: {u'id': u'C3NUEG0S0', u'name': u'game'}
@@ -313,7 +311,6 @@ def user_select_button_with_text(active_game, button_text, user_id):
     if selected_word_team_color == "assassin":
         #show the entire board + dialog that the game is over
         active_game.revealed_cards = active_game.word_set
-        active_game.save()
         revealed_cards = json.loads(active_game.revealed_cards)
         if active_game.current_team_playing == "red":
             winning_team = "blue"
@@ -336,7 +333,6 @@ def user_select_button_with_text(active_game, button_text, user_id):
             active_game.current_team_playing = "red"
         else:
             active_game.current_team_playing = "blue"
-        active_game.save()
 
     payload = generate_current_board_state(active_game, revealed_cards, winning_team)
     return payload
@@ -512,7 +508,6 @@ def give_hint(request):
             num_guesses = abs(int(formatted_hint[1]))
             # weird rule where users can select 1 more than the specified num guesses
             current_game.num_guesses_left = num_guesses + 1
-            current_game.save()
             payload =  {
                     "text": "> <@{}>'s hint: *'{}'*, *{}*".format(user_id, word.strip().upper(), num_guesses),
                     "response_type": "in_channel",
