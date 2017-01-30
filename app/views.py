@@ -397,7 +397,6 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
             "value": "end"
         }]
     })
-    print(attachments)
     if winning_team:
         payload = {
             "title": "Game Over",
@@ -506,6 +505,7 @@ def user_did_end_turn(active_game, user_id):
             active_game_filter.update(current_team_playing="blue")
         payload = generate_current_board_state(active_game, active_game.revealed_cards)
 
+    print(payload)
     return HttpResponse(json.dumps(payload), content_type='application/json')
 
 
