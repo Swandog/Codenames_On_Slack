@@ -320,6 +320,7 @@ def user_select_button_with_text(active_game, button_text, user_id):
     active_game_filter = Game.objects.filter(id=active_game.id)
     if player_obj.team_color == selected_word_team_color:
         active_game_filter.update(num_guesses_left = active_game.num_guesses_left - 1)
+        active_game.num_guesses_left -= 1
         if active_game.num_guesses_left == 0:
             # switch the teams if the num_guesses went to 0
             if active_game.current_team_playing == "blue":
@@ -331,6 +332,7 @@ def user_select_button_with_text(active_game, button_text, user_id):
 
     # 3) the player picked incorrectly (the other team's color or a neutral card)
     if player_obj.team_color != selected_word_team_color:
+        active_game.num_guesses_left = 0
         active_game_filter.update(num_guesses_left=0)
         if active_game.current_team_playing == "blue":
             active_game.current_team="red"
