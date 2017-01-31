@@ -258,8 +258,6 @@ def button(request):
     button_name = req_dict['actions'][0]['name']
     active_game_in_channel = Game.objects.get(channel_id=channel['id'])
 
-    # requests.post(response_url, data=json.dumps({'text':'test', 'replace_original': False, "response_type": "in_channel"}))
-
     # detect if the user is picking a team
     if button_name == "blue" or button_name == "red":
         payload = handle_team_selection(active_game_in_channel, channel, user, button_value)
@@ -271,8 +269,8 @@ def button(request):
         payload = user_select_button_with_text(active_game_in_channel, button_value, user['id'])
         if payload.get('attachments'):
             # if we're about to show a board...
-            requests.post(response_url, data=json.dumps(payload))
-            return HttpResponse(json.dumps(payload), content_type='application/json')
+            requests.post(response_url, data=json.dumps({'text':'test', 'replace_original': False, "response_type": "in_channel"}))
+            requests.post(response_url, data=json.dumps(payload), content_type='application/json')
     elif button_name == "end":
         payload = user_did_end_turn(active_game_in_channel, user['id'])
     else:
@@ -522,7 +520,7 @@ def handle_red_spymaster_selection(active_game, channel, user, button_value):
     else:
         Player.objects.filter(game__channel_id=channel['id'], slack_id=button_value).update(is_spymaster=True)
         # teams and spymasters have been chosen, show the board
-        payload = generate_current_board_state(active_game, [])
+        payload = generate_current_board_state(active_game, json.loads(active_game.revealed_cards))
 
     return payload
 
