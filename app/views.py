@@ -213,16 +213,21 @@ def show_map_card(request):
         else:
             map_card = json.loads(active_game.map_card)
             word_set = json.loads(active_game.word_set)
+            revealed_cards = json.loads(active_game.revealed_cards)
             attachments = []
             actions = []
             for (idx, color) in enumerate(map_card):
                 btn_style = ""
+                if word_set[idx] in revealed_cards:
+                    word = "~{}~".format(word_set[idx])
+                else:
+                    word = word_set[idx]
                 if color == "R":
-                    btn_text = "{} {}".format(color_emoji_map[map_card[idx]], word_set[idx])
+                    btn_text = "{} {}".format(color_emoji_map[map_card[idx]], word)
                 elif color == "B":
-                    btn_text = "{} {}".format(color_emoji_map[map_card[idx]], word_set[idx])
+                    btn_text = "{} {}".format(color_emoji_map[map_card[idx]], word)
                 elif color == "X":
-                    btn_text = "{} {}".format(color_emoji_map[map_card[idx]], word_set[idx])
+                    btn_text = "{} {}".format(color_emoji_map[map_card[idx]], word)
                 else:
                     btn_text = word_set[idx]
                 actions.append({
@@ -267,10 +272,9 @@ def button(request):
         payload = handle_red_spymaster_selection(active_game_in_channel, channel, user, button_value)
     elif button_name == "card":
         payload = user_select_button_with_text(active_game_in_channel, button_value, user['id'])
-        # if payload.get('attachments'):
-        #     # if we're about to show a board...
-        #     requests.post(response_url, data=json.dumps({'text':'test', 'replace_original': False, "response_type": "in_channel"}))
-        #     HttpResponse(json.dumps(payload), content_type='application/json')
+        if payload.get('attachments'):
+            # if we're about to show a board...
+            requests.post(response_url, data=json.dumps({'text':'<@{}> selected "{}"'.format(user['id'], button_value), 'replace_original': False, "response_type": "in_channel"}))
     elif button_name == "end":
         payload = user_did_end_turn(active_game_in_channel, user['id'])
     else:
@@ -397,7 +401,7 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
         "actions": [{
             "name": "end",
             "text": "End Turn",
-            "style": "danger",
+            "style": "primary",
             "type": "button",
             "value": "end"
         }]
@@ -436,7 +440,8 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
             guess_message = "Guesses: *{}* _(+1)_".format(active_game.num_guesses_left - 1)
         current_team_emoji = get_emoji_from_current_team_playing(active_game)
         payload = {
-            "text": "Here's the board! \n Current Team Playing: {}. {}".format(current_team_emoji, guess_message),
+            "title": "Here's the board!",
+            "text": "Current Team Playing: {} \n {}".format(current_team_emoji, guess_message),
             "response_type": "in_channel",
             "attachments": attachments,
             "replace_original": False,
