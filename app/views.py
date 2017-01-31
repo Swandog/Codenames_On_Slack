@@ -540,7 +540,7 @@ def user_did_end_turn(active_game, user_id, response_url):
             active_game.current_team="blue"
             active_game_filter.update(current_team_playing="blue")
 
-        requests.post(response_url, data=json.dumps({'text':"<@{}> ended their team's turn.".format(user_id), 'replace_original': False, "response_type": "in_channel"}))
+        requests.post(response_url, data=json.dumps({'text':"<@{}> ended the {} team's turn.".format(user_id, active_game.current_team_playing), 'replace_original': False, "response_type": "in_channel"}))
         payload = generate_current_board_state(active_game, active_game.revealed_cards)
 
     return payload
