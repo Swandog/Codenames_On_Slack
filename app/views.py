@@ -249,6 +249,7 @@ def show_map_card(request):
 def button(request):
     # parse the request to a dict
     req_dict = json.loads(urlparse.parse_qs(urllib.unquote(request.body))['payload'][0])
+    print(req_dict)
     actions = req_dict["actions"] #ex: [{u'name': u'chess', u'value': u'chess'}]
     callback_id = req_dict["callback_id"] #ex: wopr_game
     channel = req_dict["channel"] #ex: {u'id': u'C3NUEG0S0', u'name': u'game'}
@@ -404,7 +405,7 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
             "attachments": attachments,
         }
         Player.objects.filter(game_id=active_game.id).delete()
-        active_game.delete()
+        Game.objects.filter(game_id=active_game.id).delete()
     else:
         # remind the players of the teams
         players_in_game = Player.objects.filter(game_id=active_game.id)
