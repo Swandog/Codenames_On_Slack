@@ -258,7 +258,7 @@ def button(request):
     button_name = req_dict['actions'][0]['name']
     active_game_in_channel = Game.objects.get(channel_id=channel['id'])
 
-    requests.post(response_url, data=json.dumps({'text':'test', 'replace_original': False}))
+    requests.post(response_url, data=json.dumps({'text':'test', 'replace_original': False, "response_type": "in_channel"}))
 
     # detect if the user is picking a team
     if button_name == "blue" or button_name == "red":
