@@ -219,7 +219,7 @@ def show_map_card(request):
             for (idx, color) in enumerate(map_card):
                 btn_style = ""
                 if word_set[idx] in revealed_cards:
-                    word = "~{}~".format(word_set[idx])
+                    word = ""
                 else:
                     word = word_set[idx]
                 if color == "R":
