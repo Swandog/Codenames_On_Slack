@@ -244,7 +244,7 @@ def button(request):
     elif button_name == "map_reveal":
         payload = show_spymaster_map_card(active_game_in_channel, user['id'])
     else:
-        payload = {'text': "Good job!", "replace_original": False}
+        payload = {'text': "That does nothing! But great job!", "replace_original": False}
 
     return HttpResponse(json.dumps(payload), content_type='application/json')
 
