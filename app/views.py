@@ -249,7 +249,7 @@ def show_map_card(request):
 def button(request):
     # parse the request to a dict
     req_dict = json.loads(urlparse.parse_qs(urllib.unquote(request.body))['payload'][0])
-    print(req_dict)
+    response_url = req_dict['response_url']
     actions = req_dict["actions"] #ex: [{u'name': u'chess', u'value': u'chess'}]
     callback_id = req_dict["callback_id"] #ex: wopr_game
     channel = req_dict["channel"] #ex: {u'id': u'C3NUEG0S0', u'name': u'game'}
@@ -257,6 +257,8 @@ def button(request):
     button_value = req_dict['actions'][0]['value']
     button_name = req_dict['actions'][0]['name']
     active_game_in_channel = Game.objects.get(channel_id=channel['id'])
+
+    requests.post(response_url, data = {'text':'test', 'replace_origina': False})
 
     # detect if the user is picking a team
     if button_name == "blue" or button_name == "red":
