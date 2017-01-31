@@ -207,9 +207,9 @@ def show_map_card(request):
     else:
         active_game = Game.objects.get(channel_id=channel_id)
         if Player.objects.filter(slack_id=user_id).count() == 0:
-            payload = {'text': "You aren't currently in a game of Codenames."}
+            payload = {'text': "You aren't currently in a game of Codenames.", "replace_original": False}
         elif Player.objects.get(slack_id=user_id).is_spymaster == False:
-            payload = {'text': "You aren't flagged as a spymaster for the current game."}
+            payload = {'text': "You aren't flagged as a spymaster for the current game.", "replace_original": False}
         else:
             payload = generate_map_card(active_game)
 
