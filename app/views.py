@@ -240,7 +240,7 @@ def button(request):
             # if we're about to show a board...
             requests.post(response_url, data=json.dumps({'text':'<@{}> selected "{}"'.format(user['id'], button_value), 'replace_original': False, "response_type": "in_channel"}))
     elif button_name == "end":
-        payload = user_did_end_turn(active_game_in_channel, user['id'])
+        payload = user_did_end_turn(active_game_in_channel, user['id'], response_url)
     elif button_name == "map_reveal":
         payload = show_spymaster_map_card(active_game_in_channel, user['id'])
     else:
@@ -255,8 +255,6 @@ def show_spymaster_map_card(active_game, user_id):
     else:
         payload = generate_map_card(Game.objects.get(id=active_game.id))
     return payload
-
-
 
 def generate_map_card(active_game):
     map_card = json.loads(active_game.map_card)
@@ -448,7 +446,7 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
                 },
                 {
                     "name": "map_reveal",
-                    "text": ":world_map: Update Map Card",
+                    "text": ":world_map: Show Updated Map Card",
                     "style": "primary",
                     "type": "button",
                     "value": "end"
@@ -523,7 +521,7 @@ def handle_blue_spymaster_selection(active_game, channel, user, button_value):
             }
     return payload
 
-def user_did_end_turn(active_game, user_id):
+def user_did_end_turn(active_game, user_id, response_url):
     # enforce the user who clicked this must be a spymaster of the current team
     player = Player.objects.get(slack_id=user_id)
     active_game_filter = Game.objects.filter(id=active_game.id)
@@ -541,6 +539,8 @@ def user_did_end_turn(active_game, user_id):
         else:
             active_game.current_team="blue"
             active_game_filter.update(current_team_playing="blue")
+
+        requests.post(response_url, data=json.dumps({'text':"<@{}> ended their team's turn.".format(user_id), 'replace_original': False, "response_type": "in_channel"}))
         payload = generate_current_board_state(active_game, active_game.revealed_cards)
 
     return payload
