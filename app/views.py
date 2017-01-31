@@ -211,36 +211,7 @@ def show_map_card(request):
         elif Player.objects.get(slack_id=user_id).is_spymaster == False:
             payload = {'text': "You aren't flagged as a spymaster for the current game."}
         else:
-            map_card = json.loads(active_game.map_card)
-            word_set = json.loads(active_game.word_set)
-            revealed_cards = json.loads(active_game.revealed_cards)
-            attachments = []
-            actions = []
-            for (idx, color) in enumerate(map_card):
-                btn_style = ""
-                if word_set[idx] in revealed_cards:
-                    word = "(revealed)"
-                else:
-                    word = word_set[idx]
-                btn_text = "{} {}".format(color_emoji_map[map_card[idx]], word)
-                actions.append({
-                    "name": "map_card",
-                    "text": btn_text,
-                    "type": "button",
-                    "value": "map_card",
-                })
-            for x in range(1,6):
-                attachments.append({
-                        "fallback": "error displaying mapcard",
-                        "callback_id": "red map_card shown",
-                        "color": "#3AA3E3",
-                        "attachment_type": "default",
-                        "actions": actions[(x-1)*5:x*5]
-                    })
-            payload = {
-                "text": "Here's the map card!",
-                "attachments": attachments
-            }
+            payload = generate_map_card(active_game)
 
     return HttpResponse(json.dumps(payload), content_type='application/json')
 
@@ -270,12 +241,55 @@ def button(request):
             requests.post(response_url, data=json.dumps({'text':'<@{}> selected "{}"'.format(user['id'], button_value), 'replace_original': False, "response_type": "in_channel"}))
     elif button_name == "end":
         payload = user_did_end_turn(active_game_in_channel, user['id'])
-    elif button_name == "map_card":
-        payload = show_spymaster_map_card
+    elif button_name == "map_reveal":
+        payload = show_spymaster_map_card(active_game_in_channel, user['id'])
     else:
         payload = {'text': "Good job!", "replace_original": False}
 
     return HttpResponse(json.dumps(payload), content_type='application/json')
+
+def show_spymaster_map_card(active_game, user_id):
+    player_obj = Player.objects.get(slack_id=user_id)
+    if player_obj.is_spymaster == False:
+        payload = {'text': "You aren't flagged as a spymaster for the current game."}
+    else:
+        payload = generate_map_card(Game.objects.get(id=active_game.id))
+    return payload
+
+
+
+def generate_map_card(active_game):
+    map_card = json.loads(active_game.map_card)
+    word_set = json.loads(active_game.word_set)
+    revealed_cards = json.loads(active_game.revealed_cards)
+    attachments = []
+    actions = []
+    for (idx, color) in enumerate(map_card):
+        if word_set[idx] in revealed_cards:
+            word = "(revealed)"
+        else:
+            word = word_set[idx]
+        btn_text = "{} {}".format(color_emoji_map[map_card[idx]], word)
+        actions.append({
+            "name": "map_card",
+            "text": btn_text,
+            "type": "button",
+            "value": "map_card",
+        })
+    for x in range(1,6):
+        attachments.append({
+                "fallback": "error displaying mapcard",
+                "callback_id": "red map_card shown",
+                "color": "#3AA3E3",
+                "attachment_type": "default",
+                "actions": actions[(x-1)*5:x*5]
+            })
+    payload = {
+        "text": "Here's the map card!",
+        "attachments": attachments
+    }
+
+    return payload
 
 def user_select_button_with_text(active_game, button_text, user_id):
     # get the index of the card to be revealed
@@ -419,7 +433,7 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
             "actions": [
                 {
                     "name": "end",
-                    "text": "End Turn",
+                    "text": ":x: End Turn",
                     "style": "danger",
                     "type": "button",
                     "value": "end",
@@ -431,7 +445,7 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
                     }
                 },
                 {
-                    "name": "map_card",
+                    "name": "map_reveal",
                     "text": ":world_map: Update Map Card",
                     "style": "primary",
                     "type": "button",
@@ -443,7 +457,7 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
 
         if active_game.num_guesses_left == 0:
             # ask the team's spymaster to specify a hint
-            guess_message = "<@{}>, use */give_hint `word`, `num_guesses`* to give your team a hint.".format(
+            guess_message = "<@{}>, use */give_hint `word`*,* `num_guesses`* to give your team a hint.".format(
                 Player.objects.get(is_spymaster=True, team_color=active_game.current_team_playing).slack_id
             )
         else:
