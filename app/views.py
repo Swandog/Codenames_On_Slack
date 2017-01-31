@@ -387,18 +387,6 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
                 "attachment_type": "default",
                 "actions": actions[(x-1)*5:x*5]
             })
-    attachments.append({
-        "fallback": "error ending turn",
-        "callback_id":  "turn_ended",
-        "attachment_type": "default",
-        "actions": [{
-            "name": "end",
-            "text": "End Turn",
-            "style": "primary",
-            "type": "button",
-            "value": "end"
-        }]
-    })
     if winning_team:
         payload = {
             "title": "Game Over",
@@ -421,6 +409,32 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
         attachments.append({
             "title": "As a reminder, here are the teams:",
             "text": ":red_circle:{} \n :large_blue_circle:{}".format(red_team, blue_team)
+        })
+        attachments.append({
+            "fallback": "error ending turn",
+            "callback_id":  "turn_ended",
+            "attachment_type": "default",
+            "actions": [
+                {
+                    "name": "end",
+                    "text": "End Turn",
+                    "style": "primary",
+                    "type": "button",
+                    "value": "end",
+                    "confirm": {
+                        "title": "Are you sure?",
+                        "text": "This will end your team's turn.",
+                        "ok_text": "Yes",
+                        "dismiss_text": "No"
+                    }
+                },
+                {
+                    "name": "map_card",
+                    "text": ":world_map: Update Map Card",
+                    "type": "button",
+                    "value": "end"
+                }
+            ]
         })
 
 
