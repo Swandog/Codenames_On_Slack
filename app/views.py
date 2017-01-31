@@ -446,7 +446,7 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
                 },
                 {
                     "name": "map_reveal",
-                    "text": ":world_map: Show Updated Map Card",
+                    "text": ":world_map: Show Map Card",
                     "style": "primary",
                     "type": "button",
                     "value": "end"
