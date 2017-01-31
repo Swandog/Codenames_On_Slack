@@ -270,6 +270,8 @@ def button(request):
             requests.post(response_url, data=json.dumps({'text':'<@{}> selected "{}"'.format(user['id'], button_value), 'replace_original': False, "response_type": "in_channel"}))
     elif button_name == "end":
         payload = user_did_end_turn(active_game_in_channel, user['id'])
+    elif button_name == "map_card":
+        payload = show_spymaster_map_card
     else:
         payload = {'text': "Good job!", "replace_original": False}
 
@@ -418,7 +420,7 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
                 {
                     "name": "end",
                     "text": "End Turn",
-                    "style": "primary",
+                    "style": "danger",
                     "type": "button",
                     "value": "end",
                     "confirm": {
@@ -431,6 +433,7 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
                 {
                     "name": "map_card",
                     "text": ":world_map: Update Map Card",
+                    "style": "primary",
                     "type": "button",
                     "value": "end"
                 }
