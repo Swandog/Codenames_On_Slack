@@ -219,17 +219,10 @@ def show_map_card(request):
             for (idx, color) in enumerate(map_card):
                 btn_style = ""
                 if word_set[idx] in revealed_cards:
-                    word = ""
+                    word = "(revealed)"
                 else:
                     word = word_set[idx]
-                if color == "R":
-                    btn_text = "{} {}".format(color_emoji_map[map_card[idx]], word)
-                elif color == "B":
-                    btn_text = "{} {}".format(color_emoji_map[map_card[idx]], word)
-                elif color == "X":
-                    btn_text = "{} {}".format(color_emoji_map[map_card[idx]], word)
-                else:
-                    btn_text = word_set[idx]
+                btn_text = "{} {}".format(color_emoji_map[map_card[idx]], word)
                 actions.append({
                     "name": "map_card",
                     "text": btn_text,
