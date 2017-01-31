@@ -269,6 +269,10 @@ def button(request):
         payload = handle_red_spymaster_selection(active_game_in_channel, channel, user, button_value)
     elif button_name == "card":
         payload = user_select_button_with_text(active_game_in_channel, button_value, user['id'])
+        if payload.get('attachments'):
+            # if we're about to show a board...
+            requests.post(response_url, data=json.dumps(payload))
+            return HttpResponse(None, content_type='application/json')
     elif button_name == "end":
         payload = user_did_end_turn(active_game_in_channel, user['id'])
     else:
