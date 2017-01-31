@@ -286,7 +286,9 @@ def generate_map_card(active_game):
             })
     payload = {
         "text": "Here's the map card!",
-        "attachments": attachments
+        "attachments": attachments,
+        "replace_original": False,
+        "response_type": "ephemeral"
     }
 
     return payload
@@ -457,7 +459,7 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
 
         if active_game.num_guesses_left == 0:
             # ask the team's spymaster to specify a hint
-            guess_message = "<@{}>, use */give_hint `word`*,* `num_guesses`* to give your team a hint.".format(
+            guess_message = "<@{}>, use */give_hint `word,` `num_guesses`* to give your team a hint.".format(
                 Player.objects.get(is_spymaster=True, team_color=active_game.current_team_playing).slack_id
             )
         else:
