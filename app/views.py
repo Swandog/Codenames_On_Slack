@@ -409,8 +409,6 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
             "text": "The *{}* team won!".format(winning_team),
             "attachments": attachments,
         }
-        Player.objects.filter(game_id=active_game.id).delete()
-        Game.objects.filter(game_id=active_game.id).delete()
     else:
         # remind the players of the teams
         players_in_game = Player.objects.filter(game_id=active_game.id)
