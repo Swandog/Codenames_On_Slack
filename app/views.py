@@ -272,7 +272,7 @@ def button(request):
         if payload.get('attachments'):
             # if we're about to show a board...
             requests.post(response_url, data=json.dumps(payload))
-            return HttpResponse(json.dumps({'text': 'GOES AWAY'}), content_type='application/json')
+            return HttpResponse(json.dumps(payload), content_type='application/json')
     elif button_name == "end":
         payload = user_did_end_turn(active_game_in_channel, user['id'])
     else:
