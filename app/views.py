@@ -258,7 +258,7 @@ def button(request):
     button_name = req_dict['actions'][0]['name']
     active_game_in_channel = Game.objects.get(channel_id=channel['id'])
 
-    requests.post(response_url, data=json.dumps({'text':'test', 'replace_original': False, "response_type": "in_channel"}))
+    # requests.post(response_url, data=json.dumps({'text':'test', 'replace_original': False, "response_type": "in_channel"}))
 
     # detect if the user is picking a team
     if button_name == "blue" or button_name == "red":
@@ -272,7 +272,7 @@ def button(request):
         if payload.get('attachments'):
             # if we're about to show a board...
             requests.post(response_url, data=json.dumps(payload))
-            return HttpResponse(None, content_type='application/json')
+            return HttpResponse(json.dumps({'text': 'GOES AWAY'}), content_type='application/json')
     elif button_name == "end":
         payload = user_did_end_turn(active_game_in_channel, user['id'])
     else:
