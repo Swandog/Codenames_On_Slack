@@ -497,7 +497,7 @@ def handle_blue_spymaster_selection(active_game, channel, user, button_value):
     else:
         Player.objects.filter(game__channel_id=channel['id'], slack_id=button_value).update(is_spymaster=True)
         actions = []
-        for red_player in Player.objects.filter(team_color='red'):
+        for red_player in Player.objects.filter(team_color='red', game_id=active_game.id):
             actions.append({
                 "name": "red_spymaster",
                 "text": red_player.username,
