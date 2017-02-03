@@ -95,7 +95,7 @@ def close_teams(request):
             active_game_in_channel.accepting_new_players = False
             # show buttons to pick team leaders
             actions = []
-            for blue_player in Player.objects.filter(team_color='blue', game_id=active_game.id):
+            for blue_player in Player.objects.filter(team_color='blue', game_id=active_game_in_channel.id):
                 actions.append({
                     "name": "blue_spymaster",
                     "text": blue_player.username,
