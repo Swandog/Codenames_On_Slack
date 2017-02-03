@@ -206,9 +206,9 @@ def show_map_card(request):
         payload = {'text': "There is no active game in this channel, try `/codenames`"}
     else:
         active_game = Game.objects.get(channel_id=channel_id)
-        if Player.objects.filter(slack_id=user_id).count() == 0:
+        if Player.objects.filter(slack_id=user_id, game_id=active_game.id).count() == 0:
             payload = {'text': "You aren't currently in a game of Codenames."}
-        elif Player.objects.get(slack_id=user_id).is_spymaster == False:
+        elif Player.objects.get(slack_id=user_id, game_id=active_game.id).is_spymaster == False:
             payload = {'text': "You aren't flagged as a spymaster for the current game."}
         else:
             payload = generate_map_card(active_game)
@@ -249,7 +249,7 @@ def button(request):
     return HttpResponse(json.dumps(payload), content_type='application/json')
 
 def show_spymaster_map_card(active_game, user_id):
-    player_obj = Player.objects.get(slack_id=user_id)
+    player_obj = Player.objects.get(slack_id=user_id, game_id=active_game.id)
     if player_obj.is_spymaster == False:
         payload = {'text': "You aren't flagged as a spymaster for the current game.", "replace_original": False}
     else:
@@ -456,7 +456,7 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
         if active_game.num_guesses_left == 0:
             # ask the team's spymaster to specify a hint
             guess_message = "<@{}>, use */give_hint `word,` `num_guesses`* to give your team a hint.".format(
-                Player.objects.get(is_spymaster=True, team_color=active_game.current_team_playing).slack_id
+                Player.objects.get(is_spymaster=True, team_color=active_game.current_team_playing, game_id=active_game.id).slack_id
             )
         else:
             guess_message = "Guesses: *{}* _(+1)_".format(active_game.num_guesses_left - 1)
@@ -549,7 +549,7 @@ def handle_red_spymaster_selection(active_game, channel, user, button_value):
     if active_game.game_master != user['id']:
         payload = {"text": "Only the game master (<@{}) can set a spymaster", "replace_original": False}
     else:
-        Player.objects.filter(game__channel_id=channel['id'], slack_id=button_value).update(is_spymaster=True)
+        Player.objects.filter(game_id=active_game.id, slack_id=button_value).update(is_spymaster=True)
         # teams and spymasters have been chosen, show the board
         payload = generate_current_board_state(active_game, json.loads(active_game.revealed_cards))
 
