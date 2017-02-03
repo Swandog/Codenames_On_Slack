@@ -408,6 +408,8 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
             "title": "Game Over",
             "text": "The *{}* team won!".format(winning_team),
             "attachments": attachments,
+            "replace_original": False,
+            "delete_original": True,
         }
     else:
         # remind the players of the teams
