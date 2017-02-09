@@ -410,6 +410,7 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
             "attachments": attachments,
             "replace_original": False,
             "delete_original": True,
+            "response_type": "in_channel"
         }
     else:
         # remind the players of the teams
