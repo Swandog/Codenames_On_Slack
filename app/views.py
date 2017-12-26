@@ -176,17 +176,23 @@ def generate_mapcard(starting_team):
     return ret
 
 def cancel_game(request):
-    req_dict = urlparse.parse_qs(urllib.unquote(request.body))
-    channel_id = req_dict['channel_id'][0]
-    user_id = req_dict['user_id'][0]
+    try:
+        req_dict = urlparse.parse_qs(urllib.unquote(request.body))
+        channel_id = req_dict['channel_id'][0]
+        user_id = req_dict['user_id'][0]
 
-    current_game = Game.objects.get(channel_id=channel_id)
-    Player.objects.filter(game_id=current_game.id).delete()
-    Game.objects.filter(channel_id=channel_id).delete()
-    payload =  {
-            "text": "Successfully deleted all game data!",
-            "response_type": "in_channel",
-        }
+        current_game = Game.objects.get(channel_id=channel_id)
+        Player.objects.filter(game_id=current_game.id).delete()
+        Game.objects.filter(channel_id=channel_id).delete()
+        payload =  {
+                "text": "Successfully deleted all game data!",
+                "response_type": "in_channel",
+            }
+    except DoesNotExist:
+        payload = {
+                "text": "No game exists. To start one, try /codenames",
+                "response_type": "in_channel",
+            }
 
     return HttpResponse(json.dumps(payload), content_type='application/json')
 
