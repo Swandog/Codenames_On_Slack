@@ -190,7 +190,7 @@ def cancel_game(request):
             }
     except Game.DoesNotExist:
         payload = {
-                "text": "No game exists. To start one, try /codenames",
+                "text": "No game exists. To start one, try `/codenames`",
                 "response_type": "in_channel",
             }
 
@@ -311,6 +311,7 @@ def user_select_button_with_text(active_game, button_text, user_id):
 
     word_set = json.loads(active_game.word_set)
     map_card = json.loads(active_game.map_card)
+    blunderer = None
     winning_team = None
 
     map_card_to_team_color = {
@@ -340,13 +341,14 @@ def user_select_button_with_text(active_game, button_text, user_id):
             winning_team = "blue"
         else:
             winning_team = "red"
+        blunderer = user_id
     # 2) the player picked correctly
     active_game_filter = Game.objects.filter(id=active_game.id)
     if player_obj.team_color == selected_word_team_color:
         active_game_filter.update(num_guesses_left = active_game.num_guesses_left - 1)
         active_game.num_guesses_left -= 1
         # if the team hit their total num cards, they won
-        if did_team_win_game(active_game):
+        if did_team_win_game(active_game, None):
             # first determine if the team did win
             active_game.revealed_cards = active_game.word_set
             revealed_cards = json.loads(active_game.revealed_cards)
@@ -375,10 +377,22 @@ def user_select_button_with_text(active_game, button_text, user_id):
             active_game.current_team="blue"
             active_game_filter.update(current_team_playing="blue")
 
-    payload = generate_current_board_state(active_game, revealed_cards, winning_team)
+        # in an edge case, the player can blunder the game by picking the wrong team's winning card
+        # the game should then be over.
+        if did_team_win_game(active_game, 'R'):
+            winning_team = 'red'
+        if did_team_win_game(active_game, 'B'):
+            winning_team = 'blue'
+
+        if winning_team:
+            active_game.revealed_cards = active_game.word_set
+            revealed_cards = json.loads(active_game.revealed_cards)
+            blunderer = user_id
+
+    payload = generate_current_board_state(active_game, revealed_cards, winning_team, blunderer)
     return payload
 
-def generate_current_board_state(active_game, revealed_cards, winning_team=None):
+def generate_current_board_state(active_game, revealed_cards, winning_team=None, blunderer=None):
     active_game = Game.objects.get(id=active_game.id)
     attachments = []
     actions = []
@@ -418,6 +432,8 @@ def generate_current_board_state(active_game, revealed_cards, winning_team=None)
             "delete_original": True,
             "response_type": "in_channel"
         }
+        if blunderer:
+            payload["text"] = "<@{}> blundered it! The *{}* team won!".format(blunderer, winning_team)
     else:
         # remind the players of the teams
         players_in_game = Player.objects.filter(game_id=active_game.id)
@@ -571,15 +587,19 @@ def get_emoji_from_current_team_playing(active_game):
     else:
         return ":large_blue_circle:"
 
-def did_team_win_game(active_game):
+def did_team_win_game(active_game, color):
     game = Game.objects.get(id=active_game.id)
-    if game.current_team_playing == "red":
+
+    # override the color selection here if a color was provided as an argument
+    if color:
+        card_color = color
+    elif game.current_team_playing == "red":
         card_color = "R"
     else:
         card_color = "B"
 
-    map_card = json.loads(game.map_card)
-    word_set = json.loads(game.word_set)
+    map_card = json.loads(game.map_card) # an array of letters representing card color
+    word_set = json.loads(game.word_set) # an array of random words
     target_cards = 0
     for card in map_card:
         if card == card_color:
