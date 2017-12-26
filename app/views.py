@@ -497,7 +497,7 @@ def handle_team_selection(active_game, channel, user, button_value):
 def handle_blue_spymaster_selection(active_game, channel, user, button_value):
     # assert the person who clicked the button is the spymaster
     if active_game.game_master != user['id']:
-        payload = {"text": "Only the game master (<@{}) can set a spymaster", "replace_original": False}
+        payload = {"text": "Only the game master (<@{}>) can set a spymaster".format(active_game.game_master), "replace_original": False}
     else:
         Player.objects.filter(game__channel_id=channel['id'], slack_id=button_value).update(is_spymaster=True)
         actions = []
@@ -551,7 +551,7 @@ def user_did_end_turn(active_game, user_id, response_url):
 
 def handle_red_spymaster_selection(active_game, channel, user, button_value):
     if active_game.game_master != user['id']:
-        payload = {"text": "Only the game master (<@{}) can set a spymaster", "replace_original": False}
+        payload = {"text": "Only the game master (<@{}>) can set a spymaster".format(active_game.game_master), "replace_original": False}
     else:
         Player.objects.filter(game_id=active_game.id, slack_id=button_value).update(is_spymaster=True)
         # teams and spymasters have been chosen, show the board
