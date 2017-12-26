@@ -226,7 +226,12 @@ def button(request):
     user = req_dict["user"] #ex: {u'id': u'U3N3Z66TB', u'name': u'dustin'}
     button_value = req_dict['actions'][0]['value']
     button_name = req_dict['actions'][0]['name']
-    active_game_in_channel = Game.objects.get(channel_id=channel['id'])
+
+    try:
+        active_game_in_channel = Game.objects.get(channel_id=channel['id'])
+    except DoesNotExist:
+        payload = {'text': "I don't think that game exists anymore...sorry!", "replace_original": False}
+        return HttpResponse(json.dumps(payload), content_type='application/json')
 
     # detect if the user is picking a team
     if button_name == "blue" or button_name == "red":
