@@ -188,7 +188,7 @@ def cancel_game(request):
                 "text": "Successfully deleted all game data!",
                 "response_type": "in_channel",
             }
-    except DoesNotExist:
+    except Game.DoesNotExist:
         payload = {
                 "text": "No game exists. To start one, try /codenames",
                 "response_type": "in_channel",
@@ -229,7 +229,7 @@ def button(request):
 
     try:
         active_game_in_channel = Game.objects.get(channel_id=channel['id'])
-    except DoesNotExist:
+    except Game.DoesNotExist:
         payload = {'text': "I don't think that game exists anymore...sorry!", "replace_original": False}
         return HttpResponse(json.dumps(payload), content_type='application/json')
 
