@@ -11,7 +11,6 @@ import app.views
 
 urlpatterns = [
     url(r'^$', app.views.index, name='index'),
-    url(r'^db', app.views.db, name='db'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^generate_wordset$', app.views.generate_wordset),
     url(r'^initialize_game$', app.views.initialize_game),

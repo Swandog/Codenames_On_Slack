@@ -2,7 +2,7 @@ import os, random, json, requests, urllib, urlparse
 from django.shortcuts import render
 from django.http import HttpResponse
 from urllib2 import Request, urlopen, URLError
-from .models import Greeting, Game, Player
+from .models import Game, Player
 
 color_emoji_map = {"R": ":red_circle:", "B": ":large_blue_circle:", "X": ":black_circle:", "":":white_circle:"}
 
