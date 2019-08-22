@@ -10,7 +10,7 @@ import app.views
 # url(r'^blog/', include('blog.urls')),
 
 urlpatterns = [
-    url(r'^$', app.views.index, name='index'),
+    url(r'^$', app.views.index),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^generate_wordset$', app.views.generate_wordset),
     url(r'^initialize_game$', app.views.initialize_game),
