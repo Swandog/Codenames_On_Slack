@@ -44,7 +44,7 @@ SLACK_CLIENT_ID = '125493265142.124183670353'
 SLACK_CLIENT_SECRET = '53b2a481b4cf9767a063dd48ec15ec69'
 SLACK_SCOPE = 'bot,incoming-webhook,commands'
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
