@@ -1,4 +1,4 @@
-import os, random, json, requests, urllib, urlparse
+import os, random, json, requests, urllib, urllib.parse
 from django.shortcuts import render
 from django.http import HttpResponse
 from urllib2 import Request, urlopen, URLError
@@ -11,13 +11,13 @@ def index(request):
     return render(request, 'index.html')
 
 def test_webhook(request):
-    req_dict = urlparse.parse_qs(urllib.unquote(request.body))
+    req_dict = urllib.parse.parse_qs(urllib.unquote(request.body))
     print(req_dict)
     return HttpResponse(json.dumps({"text": "That seems to have done something! I'm not sure what..." }), content_type='application/json')
 
 def initialize_game(request):
     # create a game instance in the db then let the users pick teams
-    req_dict = urlparse.parse_qs(urllib.unquote(request.body))
+    req_dict = urllib.parse.parse_qs(urllib.unquote(request.body))
     user_id = req_dict['user_id'][0]
     user_name = req_dict['user_name'][0]
     channel_id = req_dict['channel_id'][0]
@@ -65,7 +65,7 @@ def initialize_game(request):
     return HttpResponse(json.dumps(payload), content_type='application/json')
 
 def close_teams(request):
-    req_dict = urlparse.parse_qs(urllib.unquote(request.body))
+    req_dict = urllib.parse.parse_qs(urllib.unquote(request.body))
     user_name = req_dict['user_name'][0]
     user_id = req_dict['user_id'][0]
     channel_id = req_dict['channel_id'][0]
@@ -168,7 +168,7 @@ def generate_mapcard(starting_team):
 
 def cancel_game(request):
     try:
-        req_dict = urlparse.parse_qs(urllib.unquote(request.body))
+        req_dict = urllib.parse.parse_qs(urllib.unquote(request.body))
         channel_id = req_dict['channel_id'][0]
         user_id = req_dict['user_id'][0]
 
@@ -190,7 +190,7 @@ def cancel_game(request):
 
 def show_map_card(request):
     # restricted to users who are flagged as spymasters for the game
-    req_dict = urlparse.parse_qs(urllib.unquote(request.body))
+    req_dict = urllib.parse.parse_qs(urllib.unquote(request.body))
     channel_id = req_dict['channel_id'][0]
     user_id = req_dict['user_id'][0]
 
@@ -209,7 +209,7 @@ def show_map_card(request):
 
 def button(request):
     # parse the request to a dict
-    req_dict = json.loads(urlparse.parse_qs(urllib.unquote(request.body))['payload'][0])
+    req_dict = json.loads(urllib.parse.parse_qs(urllib.unquote(request.body))['payload'][0])
     response_url = req_dict['response_url']
     actions = req_dict["actions"] #ex: [{u'name': u'chess', u'value': u'chess'}]
     callback_id = req_dict["callback_id"] #ex: wopr_game
@@ -607,7 +607,7 @@ def did_team_win_game(active_game, color):
     return target_cards == actual_revealed_cards
 
 def give_hint(request):
-    req_dict = urlparse.parse_qs(urllib.unquote(request.body))
+    req_dict = urllib.parse.parse_qs(urllib.unquote(request.body))
     user_name = req_dict['user_name'][0]
     user_id = req_dict['user_id'][0]
     channel_id = req_dict['channel_id'][0]
