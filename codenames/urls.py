@@ -4,6 +4,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 import app.views
+import django_slack_oauth
 
 # Examples:
 # url(r'^$', 'app.views.home', name='home'),
@@ -14,7 +15,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^generate_wordset$', app.views.generate_wordset),
     url(r'^initialize_game$', app.views.initialize_game),
-    url(r'^slack/', 'django_slack_oauth.urls'),
+    url(r'^slack/', django_slack_oauth.urls),
     url(r'^button/', app.views.button),
     url(r'^close_teams', app.views.close_teams),
     url(r'^test_webhook', app.views.test_webhook),
