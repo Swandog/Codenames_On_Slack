@@ -15,15 +15,6 @@ def test_webhook(request):
     print(req_dict)
     return HttpResponse(json.dumps({"text": "That seems to have done something! I'm not sure what..." }), content_type='application/json')
 
-
-def db(request):
-    greeting = Greeting()
-    greeting.save()
-
-    greetings = Greeting.objects.all()
-
-    return render(request, 'db.html', {'greetings': greetings})
-
 def initialize_game(request):
     # create a game instance in the db then let the users pick teams
     req_dict = urlparse.parse_qs(urllib.unquote(request.body))
