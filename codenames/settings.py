@@ -1,14 +1,3 @@
-"""
-Django settings for codenames project, on Heroku. For more info, see:
-https://github.com/heroku/heroku-django-template
-
-For more information on this file, see
-https://docs.djangoproject.com/en/1.8/topics/settings/
-
-For the full list of settings and their values, see
-https://docs.djangoproject.com/en/1.8/ref/settings/
-"""
-
 import os
 import dj_database_url
 
@@ -22,7 +11,7 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
 # SECURITY WARNING: change this before deploying to production!
-SECRET_KEY = 'i+acxn5(akgsn!sr4^qgf(^m&*@+g1@u^t@=8s@axc41ml*f=s'
+SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -40,8 +29,6 @@ INSTALLED_APPS = (
     'django_slack_oauth',
 )
 
-SLACK_CLIENT_ID = '125493265142.124183670353'
-SLACK_CLIENT_SECRET = '53b2a481b4cf9767a063dd48ec15ec69'
 SLACK_SCOPE = 'bot,incoming-webhook,commands'
 
 MIDDLEWARE = (
