@@ -209,7 +209,7 @@ def show_map_card(request):
     return HttpResponse(json.dumps(payload), content_type='application/json')
 
 def parse_req_body(request):
-    return urllib.parse.unquote(request.body.encode())
+    return urllib.parse.unquote(request.body.decode('utf-8'))
 
 def button(request):
     # parse the request to a dict
