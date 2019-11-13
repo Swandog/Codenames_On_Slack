@@ -29,6 +29,8 @@ INSTALLED_APPS = (
     'django_slack_oauth',
 )
 
+SLACK_CLIENT_ID = os.environ['SLACK_CLIENT_ID']
+SLACK_CLIENT_SECRET = os.environ['SLACK_CLIENT_SECRET']
 SLACK_SCOPE = 'bot,incoming-webhook,commands'
 
 MIDDLEWARE = (
