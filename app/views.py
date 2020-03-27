@@ -540,7 +540,7 @@ def handle_blue_spymaster_selection(active_game, channel, user, button_value):
     return payload
 
 def user_did_end_turn(active_game, user_id, response_url):
-    # enforce the user who clicked this must be a spymaster of the current team
+    # enforce the user who clicked this must not be a spymaster of the current team
     player = Player.objects.get(slack_id=user_id, game=active_game)
     active_game_filter = Game.objects.filter(id=active_game.id)
 
