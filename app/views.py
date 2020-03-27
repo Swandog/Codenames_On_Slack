@@ -593,6 +593,10 @@ def did_team_win_game(active_game, color):
     else:
         card_color = "B"
 
+    remaining_cards=count_remaining_cards(game, card_color)
+    return remaining_cards <=0
+
+def count_remaining_cards(game, card_color):
     map_card = json.loads(game.map_card) # an array of letters representing card color
     word_set = json.loads(game.word_set) # an array of random words
     target_cards = 0
@@ -606,9 +610,7 @@ def did_team_win_game(active_game, color):
         if map_card[idx_of_card] == card_color:
             actual_revealed_cards += 1
 
-    print(target_cards)
-    print(actual_revealed_cards)
-    return target_cards == actual_revealed_cards
+    return target_cards-actual_revealed_cards
 
 def give_hint(request):
     req_dict = urllib.parse.parse_qs(parse_req_body(request))
@@ -640,3 +642,19 @@ def give_hint(request):
         except:
             payload = {"replace_original": False, "text": "Your hint was improperly formatted."}
     return HttpResponse(json.dumps(payload), content_type='application/json')
+
+def current_score(request):
+    req_dict = urllib.parse.parse_qs(parse_req_body(request))
+    channel_id = req_dict['channel_id'][0]
+
+    current_game = Game.objects.get(channel_id=channel_id)
+    red_remaining=count_remaining_cards(current_game, "R")
+    blue_remaining=count_remaining_cards(current_game, "B")
+
+    payload = {
+        "replace_original": False,
+         "Text": "Red needs to find {} more cards; Blue needs to find {} more cards".format(red_remaining, blue_remaining)
+         }
+
+    return HttpResponse(json.dumps(payload), content_type='application/json')
+
